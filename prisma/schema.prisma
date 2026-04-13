@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model IngestItem {
+  id        String   @id @default(cuid())
+  source    String // 'github' | 'notes'
+  content   String
+  metadata  String   @default("{}") // JSON string
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  drafts    Draft[]
+}
+
+model Draft {
+  id           String      @id @default(cuid())
+  platform     String // 'x' | 'linkedin' | 'threads'
+  content      String
+  status       String      @default("pending") // 'pending' | 'approved' | 'rejected' | 'published'
+  batchId      String
+  ingestItemId String?
+  ingestItem   IngestItem? @relation(fields: [ingestItemId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model StyleReference {
+  id        String   @id @default(cuid())
+  platform  String // 'x' | 'linkedin' | 'threads'
+  content   String
+  source    String // 'scraped' | 'manual'
+  handle    String?
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
