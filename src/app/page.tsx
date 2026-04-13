@@ -19,14 +19,18 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [pulling, setPulling] = useState(false);
 
+  const [autoIngestMsg, setAutoIngestMsg] = useState<string | null>(null);
+
   useEffect(() => {
     async function load() {
-      const [notesRes, draftsRes] = await Promise.all([
+      const [notesRes, draftsRes, settingsRes] = await Promise.all([
         fetch("/api/ingest/notes"),
         fetch("/api/draft"),
+        fetch("/api/settings"),
       ]);
       const notes = await notesRes.json();
       const drafts = await draftsRes.json();
+      const settings = await settingsRes.json();
 
       setStats({
         notes: notes.filter((n: { source: string }) => n.source === "notes").length,
@@ -35,6 +39,31 @@ export default function DashboardPage() {
         approvedDrafts: drafts.filter((d: { status: string }) => d.status === "approved").length,
         publishedDrafts: drafts.filter((d: { status: string }) => d.status === "published").length,
       });
+
+      // Auto-ingest commits on page load if repo is configured
+      const repo = settings.github_repo;
+      if (repo) {
+        try {
+          const res = await fetch("/api/ingest/github", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ repo }),
+          });
+          const data = await res.json();
+          if (res.ok && data.count > 0) {
+            setAutoIngestMsg(`Auto-ingested ${data.count} new commits`);
+            // Refresh stats
+            const refreshNotes = await fetch("/api/ingest/notes");
+            const refreshedNotes = await refreshNotes.json();
+            setStats((prev) => prev ? {
+              ...prev,
+              commits: refreshedNotes.filter((n: { source: string }) => n.source === "github").length,
+            } : prev);
+          }
+        } catch {
+          // Silent fail for auto-ingest — user can always pull manually
+        }
+      }
     }
     load();
   }, []);
@@ -73,6 +102,12 @@ export default function DashboardPage() {
           Your build-in-public command center.
         </p>
       </div>
+
+      {autoIngestMsg && (
+        <div className="rounded-md border border-green-500/20 bg-green-500/10 px-4 py-2 text-sm text-green-400">
+          {autoIngestMsg}
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>

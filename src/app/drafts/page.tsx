@@ -7,12 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
+const ALL_PLATFORMS = [
+  { id: "x", label: "X" },
+  { id: "linkedin", label: "LinkedIn" },
+  { id: "threads", label: "Threads" },
+];
+
 interface Draft {
   id: string;
   platform: string;
   content: string;
   status: string;
   batchId: string;
+  imageUrl?: string | null;
   createdAt: string;
 }
 
@@ -20,6 +27,9 @@ export default function DraftsPage() {
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(
+    new Set(["x", "linkedin"])
+  );
 
   const fetchDrafts = useCallback(async () => {
     setLoading(true);
@@ -35,22 +45,36 @@ export default function DraftsPage() {
     fetchDrafts();
   }, [fetchDrafts]);
 
+  function togglePlatform(id: string) {
+    setSelectedPlatforms((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        if (next.size > 1) next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
   async function handleGenerate() {
     setGenerating(true);
     try {
+      const platforms = Array.from(selectedPlatforms);
       const res = await fetch("/api/draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ platform: "x" }),
+        body: JSON.stringify({ platforms }),
       });
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Failed");
       }
-      toast.success("Draft generated!");
+      const count = platforms.length;
+      toast.success(`Generated ${count} draft${count > 1 ? "s" : ""}!`);
       fetchDrafts();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to generate draft");
+      toast.error(e instanceof Error ? e.message : "Failed to generate drafts");
     } finally {
       setGenerating(false);
     }
@@ -69,10 +93,33 @@ export default function DraftsPage() {
             Review, edit, and approve your AI-generated posts.
           </p>
         </div>
-        <Button onClick={handleGenerate} disabled={generating}>
-          <Sparkles className="mr-2 h-4 w-4" />
-          {generating ? "Generating..." : "Generate draft"}
-        </Button>
+      </div>
+
+      <div className="flex items-center gap-3 rounded-md border border-border p-3">
+        <span className="text-sm font-medium text-muted-foreground">Platforms:</span>
+        <div className="flex gap-2">
+          {ALL_PLATFORMS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => togglePlatform(p.id)}
+              className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
+                selectedPlatforms.has(p.id)
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        <div className="ml-auto">
+          <Button onClick={handleGenerate} disabled={generating}>
+            <Sparkles className="mr-2 h-4 w-4" />
+            {generating
+              ? "Generating..."
+              : `Draft for ${selectedPlatforms.size} platform${selectedPlatforms.size > 1 ? "s" : ""}`}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="pending">

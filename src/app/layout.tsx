@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import { Nav } from "@/components/nav";
+import { Nav, MobileNav } from "@/components/nav";
+import { ScheduleChecker } from "@/components/schedule-checker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,11 +30,13 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} dark`}
     >
-      <body className="flex h-screen overflow-hidden bg-background text-foreground antialiased">
+      <body className="flex h-screen flex-col overflow-hidden bg-background text-foreground antialiased md:flex-row">
+        <MobileNav />
         <aside className="hidden w-56 shrink-0 border-r border-border md:block">
           <Nav />
         </aside>
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        <ScheduleChecker />
         <Toaster />
       </body>
     </html>

@@ -10,6 +10,7 @@ export async function PATCH(
   const data: Record<string, unknown> = {};
   if (body.content !== undefined) data.content = body.content;
   if (body.status !== undefined) data.status = body.status;
+  if ("imageUrl" in body) data.imageUrl = body.imageUrl;
 
   const draft = await prisma.draft.update({
     where: { id },

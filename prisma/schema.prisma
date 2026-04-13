@@ -22,8 +22,11 @@ model Draft {
   id           String      @id @default(cuid())
   platform     String // 'x' | 'linkedin' | 'threads'
   content      String
-  status       String      @default("pending") // 'pending' | 'approved' | 'rejected' | 'published'
+  status       String      @default("pending") // 'pending' | 'approved' | 'rejected' | 'published' | 'scheduled'
   batchId      String
+  imageUrl     String? // path to uploaded image in public/uploads/
+  scheduledAt  DateTime? // when to auto-publish (null = not scheduled)
+  publishedUrl String? // URL of the published post
   ingestItemId String?
   ingestItem   IngestItem? @relation(fields: [ingestItemId], references: [id])
   createdAt    DateTime    @default(now())
