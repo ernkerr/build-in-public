@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# build-in-public
 
-## Getting Started
+Turn your git commits and dev notes into build-in-public posts for X, LinkedIn, and Threads. An AI agent drafts platform-specific posts in your voice. You review, edit, and publish.
 
-First, run the development server:
+## How it works
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+[GitHub Commits] ──┐
+                   ├──► Agent (Claude API) ──► Draft Queue ──► Review UI ──► Publish
+[Notes (textbox)] ─┘        ▲
+                            │
+                    [Style References]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **Ingest** — Add dev notes manually or pull commits from GitHub
+2. **Draft** — The agent generates platform-tailored posts using your raw material and style references
+3. **Review** — Edit drafts inline, approve or reject them
+4. **Publish** — Copy approved posts to clipboard and paste to each platform
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quickstart
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git clone https://github.com/ernkerr/build-in-public.git
+cd build-in-public
+npm install
+cp .env.example .env     # Fill in your API keys
+npx prisma db push       # Create the SQLite database
+npx prisma generate      # Generate the Prisma client
+npm run dev              # Start the app at localhost:3000
+```
 
-## Learn More
+## Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js 20+
+- A [Claude API key](https://docs.anthropic.com/) (`ANTHROPIC_API_KEY`)
+- A [GitHub personal access token](https://github.com/settings/tokens) if using commit ingestion (`GITHUB_PAT`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | SQLite database path (default: `file:./dev.db`) |
+| `ANTHROPIC_API_KEY` | Your Claude API key for generating drafts |
+| `GITHUB_PAT` | GitHub token for pulling commits (optional) |
 
-## Deploy on Vercel
+## Adding new platforms
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The drafting system is tool-based. To add a new platform (e.g., Bluesky):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Add platform rules in `src/agent/prompts/platform-rules.ts`
+2. The agent will use those rules when generating drafts for the new platform
+3. Add the platform option to the UI dropdowns
+
+## Adding new ingest sources
+
+Implement the `Source` interface in `src/ingest/types.ts`:
+
+```typescript
+interface Source {
+  fetch(): Promise<IngestItemInput[]>;
+}
+```
+
+See `src/ingest/sources/github.ts` for an example.
+
+## Tech stack
+
+- Next.js 15 (App Router, Turbopack)
+- TypeScript, Tailwind CSS v4, shadcn/ui
+- Prisma + SQLite
+- Claude API (Anthropic SDK)
+
+## License
+
+MIT
