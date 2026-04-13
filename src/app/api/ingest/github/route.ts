@@ -9,11 +9,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "GITHUB_PAT not configured" }, { status: 400 });
   }
 
-  if (!repo || typeof repo !== "string" || !repo.includes("/")) {
-    return Response.json({ error: "Repo must be in owner/repo format" }, { status: 400 });
-  }
+  // If repo is "all" or not provided, fetch from all repos via events API
+  let owner: string | undefined;
+  let repoName: string | undefined;
 
-  const [owner, repoName] = repo.split("/");
+  if (repo && repo !== "all" && repo.includes("/")) {
+    [owner, repoName] = repo.split("/");
+  }
 
   const source = new GitHubSource({ token, owner, repo: repoName, since });
 

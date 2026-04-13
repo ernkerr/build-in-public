@@ -40,29 +40,28 @@ export default function DashboardPage() {
         publishedDrafts: drafts.filter((d: { status: string }) => d.status === "published").length,
       });
 
-      // Auto-ingest commits on page load if repo is configured
-      const repo = settings.github_repo;
-      if (repo) {
-        try {
-          const res = await fetch("/api/ingest/github", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ repo }),
-          });
-          const data = await res.json();
-          if (res.ok && data.count > 0) {
-            setAutoIngestMsg(`Auto-ingested ${data.count} new commits`);
-            // Refresh stats
-            const refreshNotes = await fetch("/api/ingest/notes");
-            const refreshedNotes = await refreshNotes.json();
-            setStats((prev) => prev ? {
-              ...prev,
-              commits: refreshedNotes.filter((n: { source: string }) => n.source === "github").length,
-            } : prev);
-          }
-        } catch {
-          // Silent fail for auto-ingest — user can always pull manually
+      // Auto-ingest commits on page load
+      // Uses specific repo from settings, or "all" for all repos
+      const repo = settings.github_repo || "all";
+      try {
+        const res = await fetch("/api/ingest/github", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ repo }),
+        });
+        const data = await res.json();
+        if (res.ok && data.count > 0) {
+          setAutoIngestMsg(`Auto-ingested ${data.count} new commits`);
+          // Refresh stats
+          const refreshNotes = await fetch("/api/ingest/notes");
+          const refreshedNotes = await refreshNotes.json();
+          setStats((prev) => prev ? {
+            ...prev,
+            commits: refreshedNotes.filter((n: { source: string }) => n.source === "github").length,
+          } : prev);
         }
+      } catch {
+        // Silent fail — GITHUB_PAT might not be set
       }
     }
     load();
@@ -73,11 +72,7 @@ export default function DashboardPage() {
     try {
       const settingsRes = await fetch("/api/settings");
       const settings = await settingsRes.json();
-      const repo = settings.github_repo;
-      if (!repo) {
-        toast.error("Set your GitHub repo in Settings first");
-        return;
-      }
+      const repo = settings.github_repo || "all";
 
       const res = await fetch("/api/ingest/github", {
         method: "POST",

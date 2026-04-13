@@ -87,11 +87,11 @@ export default function SettingsPage() {
         <CardContent className="space-y-4 pt-4">
           <h3 className="font-semibold">GitHub Connection</h3>
           <p className="text-sm text-muted-foreground">
-            Set your GitHub repo (owner/repo format). Your GITHUB_PAT is configured via the .env file.
+            Leave blank to pull commits from <strong>all your repos</strong>. Or set a specific repo (owner/repo format) to filter. Your GITHUB_PAT is configured via the .env file.
           </p>
           <input
             type="text"
-            placeholder="owner/repo"
+            placeholder="Leave blank for all repos, or owner/repo"
             value={githubRepo}
             onChange={(e) => setGithubRepo(e.target.value)}
             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
