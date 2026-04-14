@@ -40,16 +40,30 @@ If the user says `/build-in-public learn` or `/build-in-public learn x`:
 - Short hook + details in thread
 ```
 
-### Option 2: Manual learning
+### Option 2: Learn from a URL
 
-If the user pastes a post or says "learn from this: [post]":
+If the user shares a link (e.g. "learn from this: https://x.com/levelsio/status/123"):
+
+1. Use the WebFetch tool to fetch the URL and extract the post text
+2. Auto-detect the platform from the URL:
+   - `x.com` or `twitter.com` → x
+   - `linkedin.com` → linkedin
+   - `bsky.app` → bluesky
+   - `threads.net` → threads
+3. Analyze the post using the same framework as Option 1
+4. Save to the appropriate style refs file
+5. Extract patterns and update voice.md
+
+### Option 3: Manual learning
+
+If the user pastes post text directly (not a URL) or says "learn from this: [post text]":
 
 1. Analyze the post using the same framework above
-2. Ask what platform it's from
+2. Ask what platform it's from (if not obvious)
 3. Save to the appropriate style refs file
 4. Extract patterns and update voice.md
 
-### Option 3: Learn from own past posts
+### Option 4: Learn from own past posts
 
 If the user says "learn from my posts" or similar:
 
