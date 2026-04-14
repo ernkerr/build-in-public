@@ -44,22 +44,27 @@ export async function POST(request: Request) {
   const batchId = randomUUID();
   const drafts = [];
 
-  for (const platform of platforms) {
-    const styleRefs = await prisma.styleReference.findMany({ where: { platform } });
-    const styleExamples = styleRefs.map((r) => r.content);
+  try {
+    for (const platform of platforms) {
+      const styleRefs = await prisma.styleReference.findMany({ where: { platform } });
+      const styleExamples = styleRefs.map((r) => r.content);
 
-    const content = await generateDraft({ platform, rawContent, styleExamples });
+      const content = await generateDraft({ platform, rawContent, styleExamples });
 
-    const draft = await prisma.draft.create({
-      data: {
-        platform,
-        content,
-        batchId,
-        ingestItemId: items.length === 1 ? items[0].id : null,
-      },
-    });
+      const draft = await prisma.draft.create({
+        data: {
+          platform,
+          content,
+          batchId,
+          ingestItemId: items.length === 1 ? items[0].id : null,
+        },
+      });
 
-    drafts.push(draft);
+      drafts.push(draft);
+    }
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Draft generation failed";
+    return Response.json({ error: message }, { status: 500 });
   }
 
   // Mark items as used

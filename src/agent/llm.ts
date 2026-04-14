@@ -15,14 +15,16 @@ export interface LLMProvider {
 }
 
 class ClaudeProvider implements LLMProvider {
-  private client: Anthropic;
-
-  constructor() {
-    this.client = new Anthropic();
+  private getClient(): Anthropic {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error("ANTHROPIC_API_KEY not set. Run `npm run setup` or add it to .env");
+    }
+    return new Anthropic();
   }
 
   async chat(system: string, messages: Message[], options?: LLMOptions): Promise<string> {
-    const response = await this.client.messages.create({
+    const client = this.getClient();
+    const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: options?.maxTokens ?? 1024,
       temperature: options?.temperature ?? 0.7,
