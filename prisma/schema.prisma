@@ -12,6 +12,7 @@ model IngestItem {
   source    String // 'github' | 'notes'
   content   String
   metadata  String   @default("{}") // JSON string
+  expansion String? // AI-expanded version of the idea
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -6,6 +6,7 @@ import { NoteCard } from "./note-card";
 interface Note {
   id: string;
   content: string;
+  expansion?: string | null;
   used: boolean;
   createdAt: string;
 }

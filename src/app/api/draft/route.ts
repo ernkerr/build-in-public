@@ -24,22 +24,31 @@ export async function POST(request: Request) {
   const body = await request.json();
   const platforms: string[] = body.platforms ?? [body.platform ?? "x"];
   const ingestItemIds: string[] | undefined = body.ingestItemIds;
+  const rawOverride: string | undefined = body.rawOverride;
 
-  // Fetch ingest items — either specific IDs or all unused
-  const items = ingestItemIds
-    ? await prisma.ingestItem.findMany({ where: { id: { in: ingestItemIds } } })
-    : await prisma.ingestItem.findMany({ where: { used: false }, orderBy: { createdAt: "desc" }, take: 10 });
+  let rawContent: string;
+  let items: { id: string; source: string; content: string }[] = [];
 
-  if (items.length === 0) {
-    return Response.json({ error: "No content to draft from. Add some notes first." }, { status: 400 });
+  if (rawOverride) {
+    // Direct content override (e.g. from expanded ideas)
+    rawContent = rawOverride;
+  } else {
+    // Fetch ingest items — either specific IDs or all unused
+    items = ingestItemIds
+      ? await prisma.ingestItem.findMany({ where: { id: { in: ingestItemIds } } })
+      : await prisma.ingestItem.findMany({ where: { used: false }, orderBy: { createdAt: "desc" }, take: 10 });
+
+    if (items.length === 0) {
+      return Response.json({ error: "No content to draft from. Add some notes first." }, { status: 400 });
+    }
+
+    rawContent = items
+      .map((item) => {
+        const prefix = item.source === "github" ? "[commit]" : "[note]";
+        return `${prefix} ${item.content}`;
+      })
+      .join("\n\n");
   }
-
-  const rawContent = items
-    .map((item) => {
-      const prefix = item.source === "github" ? "[commit]" : "[note]";
-      return `${prefix} ${item.content}`;
-    })
-    .join("\n\n");
 
   const batchId = randomUUID();
   const drafts = [];
@@ -67,11 +76,13 @@ export async function POST(request: Request) {
     return Response.json({ error: message }, { status: 500 });
   }
 
-  // Mark items as used
-  await prisma.ingestItem.updateMany({
-    where: { id: { in: items.map((i) => i.id) } },
-    data: { used: true },
-  });
+  // Mark items as used (skip if using rawOverride)
+  if (items.length > 0) {
+    await prisma.ingestItem.updateMany({
+      where: { id: { in: items.map((i) => i.id) } },
+      data: { used: true },
+    });
+  }
 
   return Response.json(drafts.length === 1 ? drafts[0] : drafts, { status: 201 });
 }
