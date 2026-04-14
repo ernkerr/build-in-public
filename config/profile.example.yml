@@ -1,0 +1,47 @@
+# build-in-public profile
+# Copy to config/profile.yml and fill in your details
+
+name: Your Name
+handle:
+  x: "@yourhandle"
+  linkedin: "yourhandle"
+  bluesky: "you.bsky.social"
+  threads: "@yourhandle"
+
+# Which platforms to draft for (in priority order)
+platforms:
+  - x
+  - linkedin
+  - bluesky
+
+# Voice preferences
+voice:
+  tone: "direct, technical but human, no fluff"
+  avoid: "AI buzzwords, corporate speak, cringe enthusiasm"
+
+# --- API Credentials ---
+
+# X (Twitter) — OAuth 1.0a
+# Get these from https://developer.x.com/en/portal/dashboard
+# Create a project + app, enable OAuth 1.0a with Read+Write
+x_api_key: ""
+x_api_secret: ""
+x_access_token: ""
+x_access_secret: ""
+
+# LinkedIn
+# Create an app at https://linkedin.com/developers/apps
+# Request "Share on LinkedIn" (w_member_social) product
+# Get access token via OAuth 2.0 flow
+# Get person URN via GET https://api.linkedin.com/v2/userinfo
+linkedin_access_token: ""
+linkedin_person_urn: ""
+
+# Bluesky
+# Get an app password at https://bsky.app/settings/app-passwords
+bluesky_identifier: ""
+bluesky_app_password: ""
+
+# Threads (requires Meta developer app review)
+threads_access_token: ""
+threads_user_id: ""

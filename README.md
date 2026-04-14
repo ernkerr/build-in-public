@@ -1,6 +1,6 @@
 # build-in-public
 
-Turn your git commits and dev notes into build-in-public posts for X, LinkedIn, Bluesky, and Threads. An AI agent drafts platform-specific posts in your voice. You review and publish — directly from the app.
+A Claude Code skill that turns your git commits and ideas into build-in-public posts for X, LinkedIn, Bluesky, and Threads. Draft, review, and publish — all from your terminal.
 
 ## Quickstart
 
@@ -8,87 +8,104 @@ Turn your git commits and dev notes into build-in-public posts for X, LinkedIn, 
 git clone https://github.com/ernkerr/build-in-public.git
 cd build-in-public
 npm install
-npm run setup          # Interactive CLI — walks you through API keys
-npm run dev            # http://localhost:3000
+cp config/profile.example.yml config/profile.yml   # Fill in your handles + API keys
 ```
 
-That's it. The setup wizard handles everything. Or if you prefer, copy `.env.example` to `.env` and fill it in manually.
+Then in Claude Code:
 
-> **Security note:** This app is designed to run locally on your machine. It has no authentication — all API routes are open. Do not deploy it to a public URL without adding auth first. Your OAuth tokens and API keys are stored in a local SQLite database.
+```
+> /build-in-public
+```
+
+That's it. The agent reads your git history, helps you draft posts, and publishes them.
 
 ## How it works
 
 ```
-[GitHub Commits] ──┐
-                   ├──► Claude AI ──► Draft Queue ──► Review UI ──► Publish
-[Notes (textbox)] ─┘      ▲                                          │
-                          │                               ┌──────────┼──────────┐
-                  [Style References]                      ▼          ▼          ▼
-                                                      X API    LinkedIn    Bluesky
+You're coding
+  → /build-in-public draft
+    → Agent reads your recent commits
+    → Drafts a post for X in your voice
+    → You tweak it in conversation
+    → "Publish to X and adapt for LinkedIn"
+    → ✓ Published to both platforms
 ```
 
-1. **Ingest** — Commits auto-pull from all your GitHub repos on page load. Add dev notes manually.
-2. **Draft** — Pick platforms (X, LinkedIn, Bluesky, Threads) and generate. Each gets its own AI-tailored post.
-3. **Review** — Edit inline, attach images, regenerate if you don't like it, approve or reject.
-4. **Publish** — Post directly via API, schedule for later, or copy to clipboard.
+The agent is conversational. Tell it what you want:
+- "post about the auth feature I just shipped"
+- "make this more punchy"
+- "adapt this for linkedin"
+- "learn from @levelsio's style"
 
-## Features
+## Commands
 
-- **Multi-platform drafting** — AI writes different versions for each platform's style and limits
-- **Direct publishing** — X, LinkedIn, Bluesky, and Threads via API
-- **OAuth connect** — Click "Connect" in Settings for X and LinkedIn (no API key juggling)
-- **Post scheduling** — Pick a date/time, posts publish automatically
-- **Image upload** — Attach screenshots or diagrams to any draft
-- **Regenerate** — Don't like a draft? Hit regenerate for a fresh take
-- **Style references** — Paste example posts you admire, the AI matches your voice
-- **All-repo ingestion** — Auto-pulls commits from every repo you push to
-- **Mobile-ready** — Responsive with hamburger nav for reviewing on your phone
+| Command | What it does |
+|---|---|
+| `/build-in-public` | Show available commands |
+| `/build-in-public draft` | Draft a post from recent commits or an idea |
+| `/build-in-public publish` | Publish pending drafts to your platforms |
+| `/build-in-public expand` | Expand a rough idea into angles and hooks |
+| `/build-in-public learn` | Learn from viral posts to improve drafting |
+| `/build-in-public review` | Review and edit pending drafts |
+| `/build-in-public history` | View your published post history |
+
+Or just type your idea: `/build-in-public I just shipped dark mode`
 
 ## Platform setup
 
-| Platform | How to connect |
+| Platform | What you need |
 |---|---|
-| **X / Twitter** | Set `X_CLIENT_ID` + `X_CLIENT_SECRET` in .env, then click "Connect" in Settings |
-| **LinkedIn** | Set `LINKEDIN_CLIENT_ID` + `LINKEDIN_CLIENT_SECRET` in .env, then click "Connect" in Settings |
-| **Bluesky** | Set `BLUESKY_IDENTIFIER` + `BLUESKY_APP_PASSWORD` in .env ([get app password](https://bsky.app/settings/app-passwords)) |
-| **Threads** | Set `THREADS_ACCESS_TOKEN` + `THREADS_USER_ID` in .env (requires [Meta app review](https://developers.facebook.com/docs/threads)) |
+| **X** | API key + secret, access token + secret ([developer portal](https://developer.x.com)) |
+| **LinkedIn** | Access token + person URN ([developer apps](https://linkedin.com/developers/apps)) |
+| **Bluesky** | Handle + app password ([settings](https://bsky.app/settings/app-passwords)) |
+| **Threads** | Access token + user ID ([Meta developer](https://developers.facebook.com)) |
 
-See `.env.example` for detailed instructions per platform.
+Add credentials to `config/profile.yml`. Only configure the platforms you use.
 
-## Scheduled publishing
+## What the agent can do
 
-Posts can be scheduled from the Publish page. The app checks for due posts:
+- **Read your git history** — knows what you've been working on
+- **Draft per-platform** — writes differently for X (280 chars, punchy) vs LinkedIn (storytelling) vs Bluesky (indie crowd)
+- **Learn your voice** — from your past posts and style references
+- **Learn from viral posts** — scrapes popular #buildinpublic content to improve drafts
+- **Expand ideas** — turns rough thoughts into 3 angles with hooks
+- **Cross-post** — write once, adapt for every platform
+- **Publish directly** — posts via API, no copy-paste
+- **Attach images** — pass a file path for screenshots
 
-- **Automatically** while the app is open (every 60 seconds)
-- **Via cron script** for always-on scheduling:
-  ```bash
-  npm run cron   # Run alongside npm run dev
-  ```
-- **Via external cron** in production — hit `GET /api/publish/scheduled` every minute
+## Project structure
 
-## Extending
-
-**Add a new platform:**
-1. Add platform rules in `src/agent/prompts/platform-rules.ts`
-2. Create a publisher in `src/publish/` implementing the `Publisher` interface
-3. Register it in `src/publish/index.ts`
-
-**Add a new ingest source:**
-```typescript
-// Implement the Source interface in src/ingest/types.ts
-interface Source {
-  fetch(): Promise<IngestItemInput[]>;
-}
 ```
-See `src/ingest/sources/github.ts` for reference.
+.claude/skills/build-in-public/
+  SKILL.md              # Skill entry point and routing
+modes/
+  _shared.md            # Shared context (platform rules, writing rules, voice)
+  draft.md              # Drafting flow
+  publish.md            # Publishing flow
+  expand.md             # Idea expansion
+  learn.md              # Learn from viral posts
+  review.md             # Review pending drafts
+  history.md            # View past posts
+config/
+  profile.example.yml   # Config template (copy to profile.yml)
+data/
+  drafts.md             # Draft queue
+  published.md          # Publication history
+  voice.md              # Learned voice profile
+  style-refs/           # Viral post examples per platform
+scripts/
+  publish-x.mjs         # X publishing script
+  publish-linkedin.mjs  # LinkedIn publishing script
+  publish-bluesky.mjs   # Bluesky publishing script
+  scrape-viral.mjs      # Viral post scraper
+```
 
-## Tech stack
+## Adding a new platform
 
-Next.js 15 (App Router, Turbopack) · TypeScript · Tailwind CSS v4 · shadcn/ui · Prisma + SQLite · Claude API · Twitter API v2 · LinkedIn API · AT Protocol (Bluesky) · Threads API
-
-## Contributing
-
-PRs welcome. Run `npm run setup` to get your local env configured, then `npm run dev`.
+1. Add platform rules to `modes/_shared.md`
+2. Create a publish script in `scripts/`
+3. Add credentials to `config/profile.example.yml`
+4. Create a style refs file in `data/style-refs/`
 
 ## License
 
