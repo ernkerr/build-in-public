@@ -58,7 +58,7 @@ async function main() {
 
   const wantLi = (await ask(cyan("     LinkedIn? (y/n): "))).toLowerCase() === "y";
   if (wantLi) {
-    config.handle.linkedin = (await ask(cyan("     LinkedIn username: "))).trim();
+    config.handle.linkedin = (await ask(cyan("     LinkedIn profile URL (e.g. https://linkedin.com/in/you): "))).trim();
     config.platforms.push("linkedin");
   }
 
