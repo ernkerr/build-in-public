@@ -1,50 +1,19 @@
 {
   "name": "build-in-public",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Claude Code skill — turn git commits into build-in-public posts",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "cron": "node scripts/cron.mjs",
-    "setup": "node scripts/setup.mjs"
+    "setup": "node scripts/setup.mjs",
+    "publish:x": "node scripts/publish-x.mjs",
+    "publish:linkedin": "node scripts/publish-linkedin.mjs",
+    "publish:bluesky": "node scripts/publish-bluesky.mjs",
+    "scrape": "node scripts/scrape-viral.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.88.0",
     "@atproto/api": "^0.19.8",
-    "@base-ui/react": "^1.4.0",
-    "@hookform/resolvers": "^5.2.2",
-    "@libsql/client": "^0.17.2",
-    "@octokit/rest": "^22.0.1",
-    "@prisma/adapter-better-sqlite3": "^7.7.0",
-    "@prisma/adapter-libsql": "^7.7.0",
-    "@prisma/client": "^7.7.0",
-    "@types/better-sqlite3": "^7.6.13",
-    "better-sqlite3": "^12.9.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.8.0",
-    "next": "16.2.3",
-    "prisma": "^7.7.0",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-hook-form": "^7.72.1",
-    "shadcn": "^4.2.0",
-    "sonner": "^2.0.7",
-    "tailwind-merge": "^3.5.0",
-    "tw-animate-css": "^1.4.0",
     "twitter-api-v2": "^1.29.0",
-    "yaml": "^2.8.3",
-    "zod": "^4.3.6"
+    "yaml": "^2.8.3"
   },
-  "devDependencies": {
-    "@biomejs/biome": "^2.4.11",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+  "license": "MIT"
 }
