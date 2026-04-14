@@ -22,4 +22,12 @@ export const platformRules: Record<string, string> = {
 - No hashtags usually
 - Write like you're talking to a friend who codes
 - Emoji use is fine but don't overdo it`,
+
+  bluesky: `Platform: Bluesky
+- Max 300 characters per post
+- Similar vibe to early Twitter — techy, indie, open-source crowd
+- The build-in-public community is active here
+- Links and mentions are auto-detected
+- No algorithm gaming — just write something real
+- Short and specific beats long and vague`,
 };

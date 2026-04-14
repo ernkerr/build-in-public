@@ -7,10 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "cron": "node scripts/cron.mjs"
+    "cron": "node scripts/cron.mjs",
+    "setup": "node scripts/setup.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.88.0",
+    "@atproto/api": "^0.19.8",
     "@base-ui/react": "^1.4.0",
     "@hookform/resolvers": "^5.2.2",
     "@libsql/client": "^0.17.2",

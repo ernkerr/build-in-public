@@ -20,7 +20,7 @@ interface DraftCardProps {
   onUpdated: () => void;
 }
 
-const charLimits: Record<string, number> = { x: 280, linkedin: 3000, threads: 500 };
+const charLimits: Record<string, number> = { x: 280, linkedin: 3000, threads: 500, bluesky: 300 };
 
 export function DraftCard({ id, platform, content, status, imageUrl, createdAt, onUpdated }: DraftCardProps) {
   const [editing, setEditing] = useState(false);

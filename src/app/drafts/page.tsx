@@ -11,6 +11,7 @@ const ALL_PLATFORMS = [
   { id: "x", label: "X" },
   { id: "linkedin", label: "LinkedIn" },
   { id: "threads", label: "Threads" },
+  { id: "bluesky", label: "Bluesky" },
 ];
 
 interface Draft {
