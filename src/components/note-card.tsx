@@ -23,6 +23,7 @@ export function NoteCard({ id, content, expansion: initialExpansion, used, creat
   const [expansion, setExpansion] = useState(initialExpansion || "");
   const [showExpansion, setShowExpansion] = useState(!!initialExpansion);
   const [editedExpansion, setEditedExpansion] = useState(initialExpansion || "");
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(new Set(["x", "linkedin"]));
 
   async function handleExpand() {
     setExpanding(true);
@@ -66,19 +67,32 @@ export function NoteCard({ id, content, expansion: initialExpansion, used, creat
     }
   }
 
+  function togglePlatform(id: string) {
+    setSelectedPlatforms((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        if (next.size > 1) next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
   async function handleDraftFromExpanded() {
     setDrafting(true);
     try {
+      const platforms = Array.from(selectedPlatforms);
       const res = await fetch("/api/draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ platform: "x", rawOverride: editedExpansion }),
+        body: JSON.stringify({ platforms, rawOverride: editedExpansion }),
       });
       if (!res.ok) throw new Error();
-      toast.success("Draft created from expanded idea! Check the Drafts page.");
+      toast.success(`${platforms.length} draft${platforms.length > 1 ? "s" : ""} created! Check the Drafts page.`);
       onUpdated();
     } catch {
-      toast.error("Failed to create draft");
+      toast.error("Failed to create drafts");
     } finally {
       setDrafting(false);
     }
@@ -173,10 +187,32 @@ export function NoteCard({ id, content, expansion: initialExpansion, used, creat
               rows={10}
               className="text-sm resize-none border-amber-500/20 bg-transparent"
             />
-            <Button size="sm" onClick={handleDraftFromExpanded} disabled={drafting}>
-              <Send className="mr-2 h-3 w-3" />
-              {drafting ? "Drafting..." : "Draft from expanded"}
-            </Button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex gap-1">
+                {[
+                  { id: "x", label: "X" },
+                  { id: "linkedin", label: "LI" },
+                  { id: "threads", label: "Thr" },
+                  { id: "bluesky", label: "Bsky" },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => togglePlatform(p.id)}
+                    className={`rounded px-2 py-0.5 text-xs font-medium transition-colors ${
+                      selectedPlatforms.has(p.id)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <Button size="sm" onClick={handleDraftFromExpanded} disabled={drafting}>
+                <Send className="mr-2 h-3 w-3" />
+                {drafting ? "Drafting..." : `Draft for ${selectedPlatforms.size} platform${selectedPlatforms.size > 1 ? "s" : ""}`}
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>
