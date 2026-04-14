@@ -8,7 +8,8 @@
     "publish:x": "node scripts/publish-x.mjs",
     "publish:linkedin": "node scripts/publish-linkedin.mjs",
     "publish:bluesky": "node scripts/publish-bluesky.mjs",
-    "scrape": "node scripts/scrape-viral.mjs"
+    "scrape": "node scripts/scrape-viral.mjs",
+    "connect:linkedin": "node scripts/connect-linkedin.mjs"
   },
   "dependencies": {
     "@atproto/api": "^0.19.8",

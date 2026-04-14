@@ -1,15 +1,7 @@
 # build-in-public
 
-<p align="center">
-  <em>You're already building. You're just not posting about it.</em><br>
-  <strong>This agent turns your git commits into posts — drafted in your voice, published from your terminal.</strong>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Claude_Code-000?style=flat&logo=anthropic&logoColor=white" alt="Claude Code">
-  <img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT">
-</p>
+_You're already building. You're just not posting about it._  
+**This agent turns your git commits into posts — drafted in your voice, published from your terminal.**
 
 ---
 
@@ -19,18 +11,18 @@ A Claude Code skill that reads your git history, drafts build-in-public posts fo
 
 ## What It Does
 
-| Feature | Description |
-|---------|-------------|
-| **Draft from commits** | Reads your git log, suggests what to post about, writes the post |
-| **Multi-platform** | Writes differently for X (280 chars, punchy), LinkedIn (storytelling), Bluesky (indie), Threads (casual) |
-| **Expand ideas** | Got a rough thought? Agent suggests 3 angles with hooks before drafting |
-| **Learn from viral posts** | Scrapes popular #buildinpublic content to improve your drafts |
-| **Voice learning** | Remembers your tone, patterns, and what works — gets better every post |
-| **Cross-post** | Like your X post? "Adapt for LinkedIn" rewrites it for that platform |
-| **Direct publishing** | Posts via API to X, LinkedIn, Bluesky — no copy-paste |
-| **Image support** | Attach screenshots or diagrams by passing a file path |
-| **Style references** | Paste posts you admire, agent matches that energy |
-| **File-based storage** | Drafts, history, and voice data stored as readable markdown |
+| Feature                    | Description                                                                                              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Draft from commits**     | Reads your git log, suggests what to post about, writes the post                                         |
+| **Multi-platform**         | Writes differently for X (280 chars, punchy), LinkedIn (storytelling), Bluesky (indie), Threads (casual) |
+| **Expand ideas**           | Got a rough thought? Agent suggests 3 angles with hooks before drafting                                  |
+| **Learn from viral posts** | Scrapes popular #buildinpublic content to improve your drafts                                            |
+| **Voice learning**         | Remembers your tone, patterns, and what works — gets better every post                                   |
+| **Cross-post**             | Like your X post? "Adapt for LinkedIn" rewrites it for that platform                                     |
+| **Direct publishing**      | Posts via API to X, LinkedIn, Bluesky — no copy-paste                                                    |
+| **Image support**          | Attach screenshots or diagrams by passing a file path                                                    |
+| **Style references**       | Paste posts you admire, agent matches that energy                                                        |
+| **File-based storage**     | Drafts, history, and voice data stored as readable markdown                                              |
 
 ## Quick Start
 
@@ -140,14 +132,27 @@ You're coding → push commits → /build-in-public draft
 
 ## Platform Setup
 
-| Platform | What you need | How to get it |
-|----------|---------------|---------------|
-| **X** | API key + secret, access token + secret | [X Developer Portal](https://developer.x.com) — create app, enable OAuth 1.0a Read+Write |
-| **LinkedIn** | Access token + person URN | [LinkedIn Developer Apps](https://linkedin.com/developers/apps) — create app, request w_member_social |
-| **Bluesky** | Handle + app password | [Bluesky Settings](https://bsky.app/settings/app-passwords) — create app password |
-| **Threads** | Access token + user ID | [Meta Developer](https://developers.facebook.com) — requires app review |
+| Platform     | What you need                           | How to get it                                                                            |
+| ------------ | --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **X**        | API key + secret, access token + secret | [X Developer Portal](https://developer.x.com) — create app, enable OAuth 1.0a Read+Write |
+| **LinkedIn** | Access token + person URN               | `npm run connect:linkedin` — see [LinkedIn setup](#linkedin-setup) below                 |
+| **Bluesky**  | Handle + app password                   | [Bluesky Settings](https://bsky.app/settings/app-passwords) — create app password        |
+| **Threads**  | Access token + user ID                  | [Meta Developer](https://developers.facebook.com) — requires app review                  |
 
 Add credentials to `config/profile.yml`. Only configure the platforms you use — the rest are optional.
+
+### LinkedIn Setup
+
+1. Go to [linkedin.com/developers/apps](https://www.linkedin.com/developers/apps) and click **Create App**
+2. Go to the **Products** tab → request **Share on LinkedIn** and **Sign In with LinkedIn using OpenID Connect**
+3. Go to the **Auth** tab → under **Authorized redirect URLs**, add `https://httpbin.org/get`
+4. Run the connect script:
+   ```bash
+   npm run connect:linkedin
+   ```
+   It will ask for your Client ID and Secret (from the Auth tab), open your browser to authorize, and handle the rest automatically.
+
+> **Note:** LinkedIn tokens expire after 60 days. Run `npm run connect:linkedin` again to re-auth.
 
 ## Learning Your Voice
 
