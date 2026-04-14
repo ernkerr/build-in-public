@@ -8,8 +8,10 @@ A Claude Code skill that turns your git commits and ideas into build-in-public p
 git clone https://github.com/ernkerr/build-in-public.git
 cd build-in-public
 npm install
-cp config/profile.example.yml config/profile.yml   # Fill in your handles + API keys
+npm run setup              # Interactive — walks you through config
 ```
+
+Or manually: `cp config/profile.example.yml config/profile.yml` and edit it.
 
 Then in Claude Code:
 
@@ -106,6 +108,15 @@ scripts/
 2. Create a publish script in `scripts/`
 3. Add credentials to `config/profile.example.yml`
 4. Create a style refs file in `data/style-refs/`
+
+## Contributing
+
+PRs welcome. The skill is just markdown files (modes/) and Node scripts (scripts/). No build step.
+
+To add a feature:
+- New agent capability → add or edit a mode file in `modes/`
+- New platform → add a publish script + platform rules + style refs template
+- Better prompts → edit the mode files directly
 
 ## License
 
