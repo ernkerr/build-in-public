@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { prisma } from "@/lib/db";
 import type { Publisher, PublishResult } from "./types";
+import { resolveImagePath } from "./types";
 
 async function getDbSetting(key: string): Promise<string | null> {
   const setting = await prisma.settings.findUnique({ where: { key } });
@@ -102,7 +102,8 @@ export class LinkedInPublisher implements Publisher {
     const uploadUrl = registerData.value.uploadMechanism["com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"].uploadUrl;
     const asset = registerData.value.asset;
 
-    const imagePath = path.join(process.cwd(), "public", imageUrl);
+    const imagePath = resolveImagePath(imageUrl);
+    if (!imagePath) throw new Error("Invalid image path");
     const imageBuffer = await readFile(imagePath);
 
     const uploadRes = await fetch(uploadUrl, {

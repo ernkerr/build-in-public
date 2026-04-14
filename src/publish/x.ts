@@ -1,8 +1,8 @@
 import { TwitterApi } from "twitter-api-v2";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { prisma } from "@/lib/db";
 import type { Publisher, PublishResult } from "./types";
+import { resolveImagePath } from "./types";
 
 async function getDbSetting(key: string): Promise<string | null> {
   const setting = await prisma.settings.findUnique({ where: { key } });
@@ -30,15 +30,14 @@ export class XPublisher implements Publisher {
       // Upload image if provided
       let mediaId: string | undefined;
       if (imageUrl) {
-        // Image upload requires OAuth 1.0a — skip if using OAuth 2.0 only
-        if (process.env.X_API_KEY) {
+        const imagePath = resolveImagePath(imageUrl);
+        if (imagePath && process.env.X_API_KEY) {
           const oauth1Client = new TwitterApi({
             appKey: process.env.X_API_KEY!,
             appSecret: process.env.X_API_SECRET!,
             accessToken: process.env.X_ACCESS_TOKEN!,
             accessSecret: process.env.X_ACCESS_SECRET!,
           });
-          const imagePath = path.join(process.cwd(), "public", imageUrl);
           const imageBuffer = await readFile(imagePath);
           mediaId = await oauth1Client.v1.uploadMedia(imageBuffer, {
             mimeType: imageUrl.endsWith(".png") ? "image/png" : imageUrl.endsWith(".gif") ? "image/gif" : "image/jpeg",

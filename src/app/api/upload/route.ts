@@ -3,6 +3,13 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/db";
 
+const MIME_TO_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/gif": "gif",
+  "image/webp": "webp",
+};
+
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
@@ -16,9 +23,9 @@ export async function POST(request: Request) {
     return Response.json({ error: "draftId is required" }, { status: 400 });
   }
 
-  // Validate file type
-  const allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
-  if (!allowedTypes.includes(file.type)) {
+  // Derive extension from MIME type (not filename) to prevent spoofing
+  const ext = MIME_TO_EXT[file.type];
+  if (!ext) {
     return Response.json({ error: "Only PNG, JPEG, GIF, and WebP images are allowed" }, { status: 400 });
   }
 
@@ -27,9 +34,14 @@ export async function POST(request: Request) {
     return Response.json({ error: "Image must be under 5MB" }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop() || "png";
   const filename = `${randomUUID()}.${ext}`;
-  const uploadPath = path.join(process.cwd(), "public", "uploads", filename);
+  const uploadsDir = path.resolve(process.cwd(), "public", "uploads");
+  const uploadPath = path.join(uploadsDir, filename);
+
+  // Ensure resolved path is within uploads directory
+  if (!uploadPath.startsWith(uploadsDir)) {
+    return Response.json({ error: "Invalid file path" }, { status: 400 });
+  }
 
   const bytes = await file.arrayBuffer();
   await writeFile(uploadPath, Buffer.from(bytes));

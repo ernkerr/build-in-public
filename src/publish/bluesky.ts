@@ -1,7 +1,7 @@
 import { BskyAgent, RichText } from "@atproto/api";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import type { Publisher, PublishResult } from "./types";
+import { resolveImagePath } from "./types";
 
 export class BlueskyPublisher implements Publisher {
   platform = "bluesky";
@@ -37,7 +37,8 @@ export class BlueskyPublisher implements Publisher {
 
       // Upload image if provided
       if (imageUrl) {
-        const imagePath = path.join(process.cwd(), "public", imageUrl);
+        const imagePath = resolveImagePath(imageUrl);
+        if (!imagePath) return { success: false, error: "Invalid image path" };
         const imageBuffer = await readFile(imagePath);
         const mimeType = imageUrl.endsWith(".png")
           ? "image/png"

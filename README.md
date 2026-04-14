@@ -14,6 +14,8 @@ npm run dev            # http://localhost:3000
 
 That's it. The setup wizard handles everything. Or if you prefer, copy `.env.example` to `.env` and fill it in manually.
 
+> **Security note:** This app is designed to run locally on your machine. It has no authentication — all API routes are open. Do not deploy it to a public URL without adding auth first. Your OAuth tokens and API keys are stored in a local SQLite database.
+
 ## How it works
 
 ```
