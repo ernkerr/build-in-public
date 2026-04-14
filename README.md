@@ -1,22 +1,6 @@
 # build-in-public
 
-Turn your git commits and dev notes into build-in-public posts for X, LinkedIn, and Threads. An AI agent drafts platform-specific posts in your voice. You review and publish — directly from the app or via clipboard.
-
-## How it works
-
-```
-[GitHub Commits] ──┐
-                   ├──► Agent (Claude API) ──► Draft Queue ──► Review UI ──► Publish
-[Notes (textbox)] ─┘        ▲                                                  │
-                            │                                    ┌──────────────┤
-                    [Style References]                           ▼              ▼
-                                                            X API        LinkedIn API
-```
-
-1. **Ingest** — Commits are auto-pulled when you open the dashboard. Add dev notes manually.
-2. **Draft** — The agent generates platform-tailored posts using your content and style references.
-3. **Review** — Edit drafts inline, approve or reject.
-4. **Publish** — Post directly to X/LinkedIn via API, or copy to clipboard.
+Turn your git commits and dev notes into build-in-public posts for X, LinkedIn, Bluesky, and Threads. An AI agent drafts platform-specific posts in your voice. You review and publish — directly from the app.
 
 ## Quickstart
 
@@ -24,133 +8,86 @@ Turn your git commits and dev notes into build-in-public posts for X, LinkedIn, 
 git clone https://github.com/ernkerr/build-in-public.git
 cd build-in-public
 npm install
-cp .env.example .env     # Fill in your API keys (see below)
-npx prisma db push       # Create the SQLite database
-npx prisma generate      # Generate the Prisma client
-npm run dev              # Start at localhost:3000
+npm run setup          # Interactive CLI — walks you through API keys
+npm run dev            # http://localhost:3000
 ```
 
-## Prerequisites
+That's it. The setup wizard handles everything. Or if you prefer, copy `.env.example` to `.env` and fill it in manually.
 
-- Node.js 20+
-- A Claude API key (required for drafting)
+## How it works
 
-## API Keys Setup
+```
+[GitHub Commits] ──┐
+                   ├──► Claude AI ──► Draft Queue ──► Review UI ──► Publish
+[Notes (textbox)] ─┘      ▲                                          │
+                          │                               ┌──────────┼──────────┐
+                  [Style References]                      ▼          ▼          ▼
+                                                      X API    LinkedIn    Bluesky
+```
 
-### Claude API (required)
+1. **Ingest** — Commits auto-pull from all your GitHub repos on page load. Add dev notes manually.
+2. **Draft** — Pick platforms (X, LinkedIn, Bluesky, Threads) and generate. Each gets its own AI-tailored post.
+3. **Review** — Edit inline, attach images, regenerate if you don't like it, approve or reject.
+4. **Publish** — Post directly via API, schedule for later, or copy to clipboard.
 
-This powers the AI drafting. Without it, you can still use the app but can't generate drafts.
+## Features
 
-1. Go to [console.anthropic.com](https://console.anthropic.com/)
-2. Create an account and add credits
-3. Go to **API Keys** and create a new key
-4. Set `ANTHROPIC_API_KEY` in your `.env`
+- **Multi-platform drafting** — AI writes different versions for each platform's style and limits
+- **Direct publishing** — X, LinkedIn, Bluesky, and Threads via API
+- **OAuth connect** — Click "Connect" in Settings for X and LinkedIn (no API key juggling)
+- **Post scheduling** — Pick a date/time, posts publish automatically
+- **Image upload** — Attach screenshots or diagrams to any draft
+- **Regenerate** — Don't like a draft? Hit regenerate for a fresh take
+- **Style references** — Paste example posts you admire, the AI matches your voice
+- **All-repo ingestion** — Auto-pulls commits from every repo you push to
+- **Mobile-ready** — Responsive with hamburger nav for reviewing on your phone
 
-### GitHub (optional — for commit ingestion)
+## Platform setup
 
-Lets the app pull your recent commits as raw material for posts.
+| Platform | How to connect |
+|---|---|
+| **X / Twitter** | Set `X_CLIENT_ID` + `X_CLIENT_SECRET` in .env, then click "Connect" in Settings |
+| **LinkedIn** | Set `LINKEDIN_CLIENT_ID` + `LINKEDIN_CLIENT_SECRET` in .env, then click "Connect" in Settings |
+| **Bluesky** | Set `BLUESKY_IDENTIFIER` + `BLUESKY_APP_PASSWORD` in .env ([get app password](https://bsky.app/settings/app-passwords)) |
+| **Threads** | Set `THREADS_ACCESS_TOKEN` + `THREADS_USER_ID` in .env (requires [Meta app review](https://developers.facebook.com/docs/threads)) |
 
-1. Go to [github.com/settings/tokens](https://github.com/settings/tokens)
-2. Generate a **classic** token with the `repo` scope
-3. Set `GITHUB_PAT` in your `.env`
-4. In the app, go to **Settings** and enter your repo (e.g. `ernkerr/build-in-public`)
+See `.env.example` for detailed instructions per platform.
 
-Commits are auto-ingested when you open the dashboard.
+## Scheduled publishing
 
-### X / Twitter API (optional — for direct publishing)
+Posts can be scheduled from the Publish page. The app checks for due posts:
 
-Lets you publish tweets directly from the app instead of copy-pasting.
+- **Automatically** while the app is open (every 60 seconds)
+- **Via cron script** for always-on scheduling:
+  ```bash
+  npm run cron   # Run alongside npm run dev
+  ```
+- **Via external cron** in production — hit `GET /api/publish/scheduled` every minute
 
-1. Go to the [X Developer Portal](https://developer.x.com/en/portal/dashboard)
-2. Sign up for a developer account (Free tier is fine)
-3. Create a **Project** and an **App** inside it
-4. Under your app's **Settings > User authentication settings**:
-   - Enable **OAuth 1.0a**
-   - Set App permissions to **Read and Write**
-   - Set the callback URL to `http://localhost:3000` (not used, but required)
-   - Set the website URL to anything
-5. Go to **Keys and tokens** and generate:
-   - **API Key and Secret** (Consumer Keys)
-   - **Access Token and Secret** (with Read and Write access)
-6. Set these in your `.env`:
-   ```
-   X_API_KEY="your-api-key"
-   X_API_SECRET="your-api-secret"
-   X_ACCESS_TOKEN="your-access-token"
-   X_ACCESS_SECRET="your-access-secret"
-   ```
+## Extending
 
-The app supports posting single tweets and threads (separate tweets with `---` in the draft).
-
-### LinkedIn API (optional — for direct publishing)
-
-Lets you publish LinkedIn posts directly from the app.
-
-1. Go to [linkedin.com/developers/apps](https://www.linkedin.com/developers/apps) and create an app
-   - You'll need to verify your app with a LinkedIn Page (create one if needed)
-2. Under the **Products** tab, request access to **Share on LinkedIn** (`w_member_social`)
-3. Under **Auth**, note your **Client ID** and **Client Secret**
-4. Get an access token — the easiest way for personal use:
-   - Go to the [LinkedIn OAuth Token Generator](https://www.linkedin.com/developers/tools/oauth)
-   - Or use the OAuth 2.0 Authorization Code flow manually:
-     ```
-     https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=http://localhost:3000&scope=openid%20profile%20w_member_social
-     ```
-   - Exchange the code for a token using the token endpoint
-5. Get your Person URN:
-   - Call `GET https://api.linkedin.com/v2/userinfo` with your access token
-   - Your URN is: `urn:li:person:{sub}` where `{sub}` is from the response
-6. Set these in your `.env`:
-   ```
-   LINKEDIN_ACCESS_TOKEN="your-access-token"
-   LINKEDIN_PERSON_URN="urn:li:person:your-id"
-   ```
-
-> **Note:** LinkedIn access tokens expire after 60 days. You'll need to refresh them periodically. A future version will handle this automatically.
-
-## Configuration
-
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes | SQLite path (default: `file:./dev.db`) |
-| `ANTHROPIC_API_KEY` | Yes | Claude API key for draft generation |
-| `GITHUB_PAT` | No | GitHub token for commit ingestion |
-| `X_API_KEY` | No | X/Twitter API consumer key |
-| `X_API_SECRET` | No | X/Twitter API consumer secret |
-| `X_ACCESS_TOKEN` | No | X/Twitter access token |
-| `X_ACCESS_SECRET` | No | X/Twitter access token secret |
-| `LINKEDIN_ACCESS_TOKEN` | No | LinkedIn OAuth access token |
-| `LINKEDIN_PERSON_URN` | No | Your LinkedIn person URN |
-
-## Adding new platforms
-
-To add a new platform (e.g., Bluesky):
-
+**Add a new platform:**
 1. Add platform rules in `src/agent/prompts/platform-rules.ts`
 2. Create a publisher in `src/publish/` implementing the `Publisher` interface
 3. Register it in `src/publish/index.ts`
-4. Add the platform option to UI dropdowns
 
-## Adding new ingest sources
-
-Implement the `Source` interface in `src/ingest/types.ts`:
-
+**Add a new ingest source:**
 ```typescript
+// Implement the Source interface in src/ingest/types.ts
 interface Source {
   fetch(): Promise<IngestItemInput[]>;
 }
 ```
-
 See `src/ingest/sources/github.ts` for reference.
 
 ## Tech stack
 
-- Next.js 15 (App Router, Turbopack)
-- TypeScript, Tailwind CSS v4, shadcn/ui
-- Prisma + SQLite
-- Claude API (Anthropic SDK)
-- Twitter API v2, LinkedIn API v2
+Next.js 15 (App Router, Turbopack) · TypeScript · Tailwind CSS v4 · shadcn/ui · Prisma + SQLite · Claude API · Twitter API v2 · LinkedIn API · AT Protocol (Bluesky) · Threads API
+
+## Contributing
+
+PRs welcome. Run `npm run setup` to get your local env configured, then `npm run dev`.
 
 ## License
 
-MIT
+[MIT](LICENSE)

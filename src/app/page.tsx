@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { StickyNote, FileEdit, Send, GitCommit, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Onboarding } from "@/components/onboarding/onboarding";
 
 interface Stats {
   notes: number;
@@ -97,6 +98,8 @@ export default function DashboardPage() {
           Your build-in-public command center.
         </p>
       </div>
+
+      <Onboarding />
 
       {autoIngestMsg && (
         <div className="rounded-md border border-green-500/20 bg-green-500/10 px-4 py-2 text-sm text-green-400">
