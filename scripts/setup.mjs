@@ -79,9 +79,7 @@ async function main() {
   console.log(dim("     Leave blank to skip — you can always add these later.\n"));
 
   if (wantX) {
-    console.log(dim("     X: Sign up at https://developer.x.com → create project + app"));
-    console.log(dim("     Free tier: 500 posts/mo (if available). Otherwise pay-per-use: $0.01/post."));
-    console.log(dim("     Enable OAuth 1.0a with Read+Write, then get your keys.\n"));
+    console.log(dim("     X: Get keys at https://developer.x.com/en/portal/dashboard\n"));
     config.x_api_key = (await ask(cyan("     X API Key: "))).trim();
     if (config.x_api_key) {
       config.x_api_secret = (await ask(cyan("     X API Secret: "))).trim();

@@ -142,7 +142,7 @@ You're coding → push commits → /build-in-public draft
 
 | Platform | What you need | How to get it |
 |----------|---------------|---------------|
-| **X** | API key + secret, access token + secret | [X Developer Portal](https://developer.x.com) — create app, enable OAuth 1.0a Read+Write. Free tier: 500 posts/mo (if available), otherwise pay-per-use at $0.01/post |
+| **X** | API key + secret, access token + secret | [X Developer Portal](https://developer.x.com) — create app, enable OAuth 1.0a Read+Write |
 | **LinkedIn** | Access token + person URN | [LinkedIn Developer Apps](https://linkedin.com/developers/apps) — create app, request w_member_social |
 | **Bluesky** | Handle + app password | [Bluesky Settings](https://bsky.app/settings/app-passwords) — create app password |
 | **Threads** | Access token + user ID | [Meta Developer](https://developers.facebook.com) — requires app review |
