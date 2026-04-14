@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PlatformIcon } from "./platform-icon";
-import { Check, X, Pencil, Trash2, ImagePlus, X as XIcon, RefreshCw } from "lucide-react";
+import { Check, X, Pencil, Trash2, ImagePlus, X as XIcon, RefreshCw, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 interface DraftCardProps {
@@ -27,7 +27,17 @@ export function DraftCard({ id, platform, content, status, imageUrl, createdAt, 
   const [editContent, setEditContent] = useState(content);
   const [uploading, setUploading] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [showAdapt, setShowAdapt] = useState(false);
+  const [adapting, setAdapting] = useState(false);
+  const [adaptPlatforms, setAdaptPlatforms] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const allPlatforms = [
+    { id: "x", label: "X" },
+    { id: "linkedin", label: "LinkedIn" },
+    { id: "threads", label: "Threads" },
+    { id: "bluesky", label: "Bluesky" },
+  ].filter((p) => p.id !== platform); // exclude current platform
 
   const charLimit = charLimits[platform] ?? 280;
   const charCount = editing ? editContent.length : content.length;
@@ -68,6 +78,44 @@ export function DraftCard({ id, platform, content, status, imageUrl, createdAt, 
       toast.success("Draft rejected");
     } catch {
       toast.error("Failed to reject");
+    }
+  }
+
+  function toggleAdaptPlatform(pid: string) {
+    setAdaptPlatforms((prev) => {
+      const next = new Set(prev);
+      if (next.has(pid)) next.delete(pid);
+      else next.add(pid);
+      return next;
+    });
+  }
+
+  async function handleAdapt() {
+    if (adaptPlatforms.size === 0) {
+      toast.error("Select at least one platform");
+      return;
+    }
+    setAdapting(true);
+    try {
+      const res = await fetch(`/api/draft/${id}/adapt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platforms: Array.from(adaptPlatforms) }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed");
+      }
+      const drafts = await res.json();
+      const count = Array.isArray(drafts) ? drafts.length : 1;
+      toast.success(`Created ${count} adapted draft${count > 1 ? "s" : ""}!`);
+      setShowAdapt(false);
+      setAdaptPlatforms(new Set());
+      onUpdated();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to adapt");
+    } finally {
+      setAdapting(false);
     }
   }
 
@@ -218,6 +266,39 @@ export function DraftCard({ id, platform, content, status, imageUrl, createdAt, 
             </div>
           )}
         </div>
+
+        {(status === "pending" || status === "approved") && (
+          <div className="pt-1">
+            {!showAdapt ? (
+              <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground" onClick={() => setShowAdapt(true)}>
+                <Copy className="mr-1.5 h-3 w-3" /> Adapt to other platforms
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2 flex-wrap rounded-md border p-2">
+                <span className="text-xs text-muted-foreground">Adapt to:</span>
+                {allPlatforms.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => toggleAdaptPlatform(p.id)}
+                    className={`rounded px-2 py-0.5 text-xs font-medium transition-colors ${
+                      adaptPlatforms.has(p.id)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+                <Button size="sm" className="h-6 text-xs" onClick={handleAdapt} disabled={adapting || adaptPlatforms.size === 0}>
+                  {adapting ? "Adapting..." : "Go"}
+                </Button>
+                <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={() => { setShowAdapt(false); setAdaptPlatforms(new Set()); }}>
+                  Cancel
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
