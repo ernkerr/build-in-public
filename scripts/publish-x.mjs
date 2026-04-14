@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 
-// Usage: node scripts/publish-x.mjs "post content" [image-path]
+// Usage:
+//   node scripts/publish-x.mjs --file <path> [--image <path>]   (recommended)
+//   node scripts/publish-x.mjs "post content" [image-path]      (legacy, unsafe for multi-line)
+//
+// Prefer --file for multi-line posts (including threads separated by \n---\n).
+// Passing long or multi-line content as a quoted bash argument can expose the
+// command to shell-quoting pitfalls and makes command-string validation
+// brittle (e.g. a newline + "#" inside quotes can hide trailing arguments
+// from hooks that parse the raw command).
+//
 // Reads credentials from config/profile.yml
 
 import { readFileSync } from "node:fs";
@@ -26,11 +35,22 @@ if (!x_api_key || !x_access_token) {
   process.exit(1);
 }
 
-const content = process.argv[2];
-const imagePath = process.argv[3];
+const args = process.argv.slice(2);
+let content, imagePath;
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === "--file" && args[i + 1]) {
+    content = readFileSync(resolve(ROOT, args[++i]), "utf-8").replace(/\n$/, "");
+  } else if (args[i] === "--image" && args[i + 1]) {
+    imagePath = args[++i];
+  } else if (content === undefined) {
+    content = args[i];
+  } else if (imagePath === undefined) {
+    imagePath = args[i];
+  }
+}
 
 if (!content) {
-  console.error("Usage: node scripts/publish-x.mjs \"post content\" [image-path]");
+  console.error("Usage: node scripts/publish-x.mjs --file <path> [--image <path>]");
   process.exit(1);
 }
 

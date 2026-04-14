@@ -24,11 +24,16 @@ Which ones do you want to publish? (all, or pick numbers)
 
 ### Step 2: Publish
 
-For each selected draft, run the appropriate publish script:
+For each selected draft, write the post content to a temp file first, then invoke the publish script with `--file`:
 
-- **X**: `node scripts/publish-x.mjs "<content>" [image-path]`
-- **LinkedIn**: `node scripts/publish-linkedin.mjs "<content>" [image-path]`
-- **Bluesky**: `node scripts/publish-bluesky.mjs "<content>" [image-path]`
+1. Use the Write tool to save the content to `/tmp/bip-post.txt`.
+2. Run the script with the file path:
+   - **X**: `node scripts/publish-x.mjs --file /tmp/bip-post.txt [--image <path>]`
+   - **LinkedIn**: `node scripts/publish-linkedin.mjs --file /tmp/bip-post.txt [--image <path>]`
+   - **Bluesky**: `node scripts/publish-bluesky.mjs --file /tmp/bip-post.txt [--image <path>]`
+3. Clean up the temp file after publishing (`rm /tmp/bip-post.txt`).
+
+**Why `--file` and not a quoted argument?** Passing multi-line post content as a quoted bash argument is brittle: a newline followed by `#` (e.g. a `#buildinpublic` hashtag on its own line) can confuse tools that parse the raw command string, and shell-quoting of apostrophes/backticks/etc. inside post text is error-prone. Always use `--file`.
 
 The scripts read API credentials from `config/profile.yml` and return the post URL on success.
 
@@ -61,6 +66,6 @@ If yes, draft adapted versions (follow the draft mode adaptation flow), then pub
 
 ### Publishing with images
 
-If a draft has an image path in the Image column of `data/drafts.md`, pass it to the publish script.
+If a draft has an image path in the Image column of `data/drafts.md`, pass it to the publish script via `--image <path>`.
 
 The user can also say "publish with this screenshot" and provide a file path. Use the Read tool to verify the image exists before passing it to the script.
