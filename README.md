@@ -160,7 +160,7 @@ The agent improves over time:
 
 1. **Style references** — Paste posts you like: "learn from this: [post]"
 2. **Viral scraping** — `/build-in-public learn x` finds popular #buildinpublic posts and analyzes what works
-3. **Voice file** — `data/voice.md` accumulates your patterns, tone, and what resonates
+3. **Voice files** — `data/voice/voice.md` (universal) plus `data/voice/{platform}/voice.md` accumulate your patterns, tone, and what resonates per platform. Task-specific voices live under platform folders (e.g. `data/voice/instagram/scripting.md`).
 4. **Past posts** — The agent reads your publication history to stay consistent
 
 The more you use it, the less editing you'll need.
@@ -168,11 +168,21 @@ The more you use it, the less editing you'll need.
 ## Project Structure
 
 ```
-.claude/skills/build-in-public/
-  SKILL.md                  # Skill entry point and routing
+CLAUDE.md                   # Agent identity + @-imports for the always-on rules
+SKILL.md                    # Agent-level knowledge surface (the high-level shape)
+decisions.md                # Log of major design/architectural decisions
+
+.claude/
+  rules/
+    voice-lookup.md         # Drafting protocol (read every session via @import)
+    feedback-loop.md        # Feedback handling protocol (read every session via @import)
+    never-words.md          # Banned vocabulary + cadences (read on-demand)
+    voice-non-negotiables.md # Punctuation + structure rules (read on-demand)
+  skills/build-in-public/
+    SKILL.md                # Skill entry point and routing
 
 modes/
-  _shared.md                # Shared context (platform rules, writing rules, voice)
+  _shared.md                # Shared context (pointer to rules; git + save mechanics)
   draft.md                  # Drafting flow
   publish.md                # Publishing flow
   expand.md                 # Idea expansion
@@ -186,8 +196,16 @@ config/
 data/
   drafts.md                 # Draft queue (markdown table)
   published.md              # Publication history
-  voice.md                  # Learned voice profile
-  style-refs/               # Viral post examples per platform
+  voice/                    # Voice hierarchy
+    voice.md                # Universal voice direction
+    {platform}/voice.md     # Per-platform voice (x, linkedin, instagram, ...)
+    instagram/{scripting,hook,text-overlay,caption}.md  # Per-task voice
+  references/               # Annotated post examples per platform
+    {platform}/curated.md   # Reference collection per platform
+
+inbox/                      # Incoming material awaiting triage
+outputs/                    # Completed work
+archive/                    # Read-only past iterations
 
 scripts/
   publish-x.mjs             # X publishing script
@@ -199,10 +217,11 @@ scripts/
 
 ## Adding a New Platform
 
-1. Add platform rules to `modes/_shared.md`
-2. Create `scripts/publish-{platform}.mjs`
-3. Add credential fields to `config/profile.example.yml`
-4. Create `data/style-refs/{platform}.md`
+1. Create `data/voice/{platform}/voice.md` with format constraints + voice direction
+2. Create `data/references/{platform}/` with a 1-line README placeholder
+3. Create `scripts/publish-{platform}.mjs`
+4. Add credential fields to `config/profile.example.yml` (and your own `profile.yml`)
+5. Add to the platform pick logic in `modes/draft.md`
 
 Or just ask Claude: "Add Mastodon support" — it knows the pattern.
 

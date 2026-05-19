@@ -15,8 +15,8 @@ Shared workspace for incoming material. The triage zone — things land here bef
 The agent processes inbox items into one of:
 
 - A draft → `outputs/` (or `data/drafts.md` until migration is complete)
-- A style reference → `data/style-refs/{channel}.md`
-- A voice learning → `data/voice.md` (or a file under `.claude/rules/`)
+- A reference → `data/references/{platform}/curated.md`
+- A voice learning → the appropriate level of `data/voice/` per `.claude/rules/feedback-loop.md` (universal / platform / task)
 - An archived/dropped item → `archive/`
 
 Don't let things rot in inbox/. If something's been here for a while and nobody's done anything with it, archive it.

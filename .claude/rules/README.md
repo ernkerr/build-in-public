@@ -14,7 +14,7 @@ Files here should be tight: one rule (or one related cluster) per file, with a s
 
 - Mode-specific prompts → those go in [modes/](../../modes/) (or the new per-channel workflow location once migrated)
 - Channel format rules (X is 280 chars, etc.) → those are channel config, not always-on rules
-- Examples and references → those go in `data/style-refs/` (or `inbox/` if not yet categorized)
+- Examples and references → those go in `data/references/{platform}/` (or `inbox/` if not yet categorized)
 
 ## Loading
 

@@ -6,6 +6,16 @@ Learn from viral build-in-public posts to improve drafting quality. Two approach
 1. **Scrape**: Automatically find popular posts on a platform
 2. **Manual**: User pastes a post they like
 
+## Where things get saved
+
+- **References (full annotated posts)** → `data/references/{platform}/curated.md` (append; create the file if it doesn't exist).
+- **Voice patterns** → the appropriate level of `data/voice/` per `.claude/rules/feedback-loop.md`:
+  - Universal pattern (true across platforms) → `data/voice/voice.md`
+  - Platform-specific pattern → `data/voice/{platform}/voice.md`
+  - Task-specific pattern (e.g. IG Reel hooks) → `data/voice/{platform}/{task}.md`
+- If unsure of scope, **ask** before saving.
+- Always **append** unless the user explicitly says to overwrite.
+
 ## Flow
 
 ### Option 1: Scrape viral posts
@@ -21,7 +31,7 @@ If the user says `/build-in-public learn` or `/build-in-public learn x`:
    - **Specifics**: What concrete details are included?
    - **Engagement**: Why did this resonate?
 
-5. Save the best examples to `data/style-refs/{platform}.md`:
+5. Append the best examples to `data/references/{platform}/curated.md`:
 
 ```markdown
 ### Example [N] (source: @handle, ~likes likes)
@@ -30,7 +40,7 @@ If the user says `/build-in-public learn` or `/build-in-public learn x`:
 **Pattern:** [reusable pattern name, e.g. "the struggle → solution arc"]
 ```
 
-6. Update `data/voice.md` with any new patterns discovered:
+6. If new voice patterns emerged, ask the user where they belong (universal / platform / task), then append to the right voice file:
 
 ```markdown
 ## Patterns that work on [platform]
@@ -50,9 +60,12 @@ If the user shares a link (e.g. "learn from this: https://x.com/levelsio/status/
    - `linkedin.com` → linkedin
    - `bsky.app` → bluesky
    - `threads.net` → threads
+   - `instagram.com` → instagram
+   - `youtube.com` or `youtu.be` → youtube
+   - `tiktok.com` → tiktok
 3. Analyze the post using the same framework as Option 1
-4. Save to the appropriate style refs file
-5. Extract patterns and update voice.md
+4. Append to `data/references/{platform}/curated.md`
+5. If new patterns emerged, ask scope, then append to the right voice file
 
 ### Option 3: Manual learning
 
@@ -60,8 +73,8 @@ If the user pastes post text directly (not a URL) or says "learn from this: [pos
 
 1. Analyze the post using the same framework above
 2. Ask what platform it's from (if not obvious)
-3. Save to the appropriate style refs file
-4. Extract patterns and update voice.md
+3. Append to `data/references/{platform}/curated.md`
+4. Extract patterns, ask scope, append to the right voice file
 
 ### Option 4: Learn from own past posts
 
@@ -70,11 +83,11 @@ If the user says "learn from my posts" or similar:
 1. Read `data/published.md` for post history
 2. If engagement data exists, find the top performers
 3. Analyze what worked in the user's own voice
-4. Update `data/voice.md` with self-learned patterns
+4. Ask scope, then append to the appropriate voice file
 
 ## After learning
 
-Show what was learned:
+Show what was learned and where it was saved:
 ```
 Learned from 5 viral posts on X:
 
@@ -83,6 +96,6 @@ New patterns found:
 - "The build log" — daily/weekly progress updates build audience over time
 - "Show the code" — screenshots of actual code or terminal output add credibility
 
-Saved to data/style-refs/x.md
-Updated data/voice.md with new patterns
+Appended references to: data/references/x/curated.md
+Appended voice patterns to: data/voice/x/voice.md (platform-level)
 ```

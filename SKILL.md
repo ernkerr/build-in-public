@@ -1,6 +1,6 @@
 ---
 name: build-in-public
-description: Agent-level knowledge and workflows for turning dev work into build-in-public content across multiple channels (social posts, blog, newsletter, video — anything where you'd narrate the work).
+description: Agent-level knowledge and workflows for turning dev work into build-in-public content across multiple channels (social posts, video scripts, captions, hooks — anything where you'd narrate the work).
 ---
 
 # build-in-public — agent skill
@@ -11,32 +11,44 @@ For the user-facing slash command implementation, see [.claude/skills/build-in-p
 
 ## Channels
 
-The agent treats every output destination as a **channel**. A channel is anything with its own voice, format constraints, and audience:
+The agent treats every output destination as a **channel**. A channel is anything with its own voice, format constraints, and audience. Each channel has its own voice file at `data/voice/{platform}/voice.md` and reference examples at `data/references/{platform}/`.
 
-- **Social** — X, LinkedIn, Bluesky, Threads (existing, in `modes/_shared.md`)
-- _Planned_ — long-form blog, newsletter, podcast/video scripts, conference talk drafts
+Active channels:
+- **X** — high confidence, 19 reference posts
+- **LinkedIn** — high confidence, 15 reference posts
+- **Threads** — stub, falls back to X cadence
+- **Bluesky** — stub, falls back to X cadence
+- **Instagram** — stub; multi-task (`scripting`, `hook`, `text-overlay`, `caption` subfiles)
+- **YouTube** — stub
+- **TikTok** — stub
 
 Each channel has:
-- Format rules (length, structure, tone)
-- Voice references (`data/style-refs/{channel}.md` today)
-- A publishing path (script in `scripts/` or manual)
+- Format rules (length, structure) — in its `data/voice/{platform}/voice.md`
+- Positive voice direction — same file
+- Optional task-specific voice files (e.g. `data/voice/instagram/scripting.md`) when the channel has distinct sub-formats
+- Reference examples — `data/references/{platform}/`
+- A publishing path — script in `scripts/` or manual via the publish mode
 
 ## Workspaces
 
 | Directory | Role |
 |---|---|
-| [inbox/](inbox/) | Raw incoming material — pasted style refs, transcripts, link dumps, half-formed ideas, anything awaiting triage |
-| [outputs/](outputs/) | Finished work the agent has produced — drafts ready to ship, published artifacts, generated assets |
-| [archive/](archive/) | Frozen past iterations — old voice profiles, retired channel rules, snapshots from before a refactor |
-| [.claude/rules/](.claude/rules/) | Always-on directives the agent should never violate (never-words, voice non-negotiables, safety rules) |
+| [data/voice/](data/voice/) | Voice hierarchy: universal → platform → task |
+| [data/references/](data/references/) | Annotated post examples per platform |
+| [.claude/rules/](.claude/rules/) | Always-on rules + drafting + feedback protocols |
 | [.claude/skills/](.claude/skills/) | Executable skills and routing — what Claude Code auto-discovers |
+| [inbox/](inbox/) | Raw incoming material awaiting triage |
+| [outputs/](outputs/) | Finished work (drafts ready to ship, published artifacts) |
+| [archive/](archive/) | Frozen past iterations (old voice profiles, pre-refactor snapshots) |
 
-## Migration status
+## Drafting + feedback protocols
 
-The repo is mid-refactor from a social-only structure to a channel-agnostic one. Today's authoritative content still lives in:
-- `modes/` — per-mode prompts
-- `data/voice.md`, `data/style-refs/` — voice
-- `data/drafts.md`, `data/published.md` — workflow state
-- `config/profile.yml` — identity & creds
+Both are imported into CLAUDE.md so they load every session:
+- [.claude/rules/voice-lookup.md](.claude/rules/voice-lookup.md) — what to read before drafting (universal → platform → task → references)
+- [.claude/rules/feedback-loop.md](.claude/rules/feedback-loop.md) — how to handle feedback (identify scope, append by default, promote on recurrence)
 
-These will migrate into `inbox/`, `outputs/`, `archive/`, and `.claude/rules/` as the new structure proves out. Until then, the existing paths in `.claude/skills/build-in-public/SKILL.md` remain the sources of truth.
+Hard prohibitions live in [.claude/rules/never-words.md](.claude/rules/never-words.md) and [.claude/rules/voice-non-negotiables.md](.claude/rules/voice-non-negotiables.md). Those are referenced from `voice-lookup.md` and loaded on-demand (not at session start) to keep root context lean.
+
+## Major decisions
+
+Logged at [decisions.md](decisions.md). When adding a new architectural choice that took real reasoning, append an entry there.

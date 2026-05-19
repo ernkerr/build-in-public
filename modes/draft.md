@@ -23,11 +23,15 @@ What do you want to post about? Or I can suggest an angle.
 
 4. If the user says "suggest" or similar, pick the most interesting commit(s) and propose an angle
 
-### Step 2: Read voice and style
+### Step 2: Read universal voice + rules
 
-1. Read `config/profile.yml` for platforms and identity
-2. Read `data/voice.md` for the operational voice profile (channel notes, banned moves, CTA rules)
-3. Read `data/style-refs/{primary-platform}.md` for the target platform — once primary is picked in Step 3
+Per `.claude/rules/voice-lookup.md`:
+
+1. Read `config/profile.yml` for available platforms and Erin's identity/handles
+2. Read `.claude/rules/never-words.md` and `.claude/rules/voice-non-negotiables.md` (hard prohibitions)
+3. Read `data/voice/voice.md` (universal voice direction)
+
+Platform voice + references load AFTER primary is picked — see Step 4.
 
 ### Step 3: Pick the primary platform from the source idea
 
@@ -36,15 +40,24 @@ Do NOT default to the first platform in `profile.yml`. Pick based on which platf
 - **X** when the idea is compressible to a punchy claim, a number-driven hook, a meme cadence, or a sharp observation.
 - **LinkedIn** when the idea wants thinking-out-loud space, a real anecdote, or a reflective frame. Posts that need >280 chars of context to land.
 - **Threads** when the idea is conversational/casual and would feel forced as either X-tight or LinkedIn-essay.
+- **Instagram** when the idea is visual-first (a screenshot, a process, a before/after) and would land harder with imagery than with text.
+- **YouTube** when the idea wants long-form treatment — explanation, walkthrough, deeper context that won't compress.
+- **TikTok** when the idea has a quick visual hook + short narrative arc that suits 15-60s vertical video.
 - **Bluesky** when the idea is techy/indie/open-source-flavored and would land with that crowd specifically.
 
 State the pick out loud and why, in one line: *"Primary: LinkedIn — the bug story needs the setup paragraph."*
 
 If the user wants a different primary, switch.
 
-### Step 4: Draft the primary version
+### Step 4: Read platform voice + draft the primary version
 
-Write a draft for the primary platform. Use the voice profile's Channel Notes section for that platform.
+Now that primary is picked, complete the lookup:
+
+1. Read `data/voice/{primary-platform}/voice.md` for platform direction (rhythm, format constraints, voice notes)
+2. If the task is task-specific (e.g. an Instagram Reel scripting pass): also read `data/voice/{primary-platform}/{task}.md`
+3. Read `data/references/{primary-platform}/*.md` for structural patterns and what's worked before
+
+Then write a draft for the primary platform.
 
 Show the draft with character count:
 
@@ -63,13 +76,15 @@ Sometimes the fix is simple. Finding it isn't. #buildinpublic"
 
 Before presenting the draft to the user, run this checklist. If anything fails, rewrite first.
 
-- [ ] No banned moves from `data/voice.md` present (guru cadences, bait closes, AI vocabulary, em-dashes-mid-sentence)
+- [ ] No banned vocabulary or cadences from `.claude/rules/never-words.md`
+- [ ] No violations of `.claude/rules/voice-non-negotiables.md` (em dashes, "It's not X. It's Y.", bait closes)
 - [ ] No engagement-bait CTA unless explicitly requested
 - [ ] Claim has a real receipt (number, mechanism, named tech, concrete observation) — not just adjectives
-- [ ] Length is within the platform's hard limit (X 280, LI 3000, Threads 500, Bluesky 300)
+- [ ] Length is within the platform's hard limit (from `data/voice/{platform}/voice.md`)
 - [ ] Reads like Erin under that platform's constraint — not like the platform stereotype
 - [ ] Long ellipses (`.......`) preserved if natural; not normalized to `…`
 - [ ] Single tasteful emoji at end, max — strip any extras
+- [ ] Structurally matches a pattern from `data/references/{platform}/*.md` (or is a deliberate departure)
 
 If the draft fails, rewrite silently and run the gate again. Only show drafts that pass.
 
@@ -84,16 +99,16 @@ Want to:
 4. Start over
 ```
 
-- If edit: let them give feedback, redraft, re-run the quality gate
+- If edit: let them give feedback, redraft, re-run the quality gate. Feedback handling follows `.claude/rules/feedback-loop.md` — identify scope, save to the right level of the voice tree.
 - If publish: switch to publish mode
 - If adapt: go to Step 7
 - If start over: go back to Step 1
 
 ### Step 7: Adapt to other platforms (when requested)
 
-For each additional platform:
+For each additional platform, repeat the platform-specific lookup:
 
-1. Read `data/style-refs/{platform}.md` and `data/voice.md` Channel Notes for that platform
+1. Read `data/voice/{platform}/voice.md` and `data/references/{platform}/*.md` for that platform (universal voice already loaded from Step 2)
 2. Adapt the primary version — do NOT paste-and-shorten or paste-and-expand
 3. Run the quality gate (Step 5) on each variant
 4. Add a one-line **"What changed and why"** note per variant

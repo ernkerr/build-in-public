@@ -1,6 +1,6 @@
 ---
 name: build-in-public
-description: Turn your git commits and dev work into build-in-public posts for X, LinkedIn, Bluesky, and Threads. Drafts posts in your voice, learns from viral content, publishes directly.
+description: Turn your git commits and dev work into build-in-public content across X, LinkedIn, Instagram, Threads, YouTube, TikTok, and Bluesky. Drafts posts in your voice, learns from viral content, publishes directly.
 ---
 
 # /build-in-public
@@ -42,10 +42,14 @@ Or just tell me what you want to post about.
 
 ## Sources of Truth
 
-Always read these files for context before drafting:
+Before drafting, follow `.claude/rules/voice-lookup.md` for the read protocol. The key files:
+
 - `config/profile.yml` — user identity, handles, platforms, API creds
-- `data/voice.md` — learned voice patterns
-- `data/style-refs/{platform}.md` — viral post examples per platform
+- `.claude/rules/never-words.md` + `voice-non-negotiables.md` — hard prohibitions (always read first)
+- `data/voice/voice.md` — universal voice direction
+- `data/voice/{platform}/voice.md` — per-platform voice (read after primary platform is picked)
+- `data/voice/{platform}/{task}.md` — per-task voice within a platform (e.g. `instagram/scripting.md`)
+- `data/references/{platform}/*.md` — annotated examples per platform
 - `data/drafts.md` — current draft queue
 - `data/published.md` — publication history
 
@@ -53,7 +57,8 @@ Always read these files for context before drafting:
 
 - NEVER make up engagement numbers or fake metrics
 - ALWAYS read the user's git history from the ACTUAL repo they're in
-- ALWAYS check `data/voice.md` and style refs before drafting
+- ALWAYS follow `.claude/rules/voice-lookup.md` before drafting
 - When publishing, use the scripts in `scripts/` via Bash tool
 - Save all drafts and published posts to the data files
+- When user gives feedback on a draft, follow `.claude/rules/feedback-loop.md`
 - After publishing, ALWAYS ask about cross-posting to other platforms

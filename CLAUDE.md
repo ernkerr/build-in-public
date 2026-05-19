@@ -9,9 +9,7 @@ This is the **build-in-public** project — an agent for the full build-in-publi
 
 ## Voice and references
 
-Each platform gets its own voice file (e.g. `instagram_voice.md`). Some platforms also have task-specific voices (e.g. `scripting_voice.md` for video scripts vs. captions). Same for reference examples — per-platform files the agent reads before drafting.
-
-Before writing, the agent looks up the right voice and references for the platform + task. If a needed file doesn't exist yet, ask before drafting blind.
+Voice lives in `data/voice/`. References in `data/references/`. Drafting protocol in `.claude/rules/voice-lookup.md` (imported below).
 
 ## Lifecycle scope
 
@@ -44,3 +42,9 @@ Quick commands:
 ```
 
 If `config/profile.yml` doesn't exist, tell them to run `npm run setup` first.
+
+---
+
+@.claude/rules/voice-lookup.md
+
+@.claude/rules/feedback-loop.md
