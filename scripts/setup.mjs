@@ -24,13 +24,16 @@ function cyan(s) { return `\x1b[36m${s}\x1b[0m`; }
 
 const config = {
   name: "",
-  handle: { x: "", linkedin: "", bluesky: "", threads: "" },
+  handle: { x: "", linkedin: "", instagram: "", threads: "", youtube: "", tiktok: "", bluesky: "" },
   platforms: [],
   voice: { tone: "direct, technical but human, no fluff", avoid: "AI buzzwords, corporate speak, cringe enthusiasm" },
   x_api_key: "", x_api_secret: "", x_access_token: "", x_access_secret: "",
-  linkedin_access_token: "", linkedin_person_urn: "",
-  bluesky_identifier: "", bluesky_app_password: "",
+  linkedin_client_id: "", linkedin_client_secret: "", linkedin_access_token: "", linkedin_refresh_token: "", linkedin_person_urn: "",
+  instagram_access_token: "", instagram_user_id: "",
   threads_access_token: "", threads_user_id: "",
+  youtube_client_id: "", youtube_client_secret: "", youtube_access_token: "", youtube_refresh_token: "",
+  tiktok_client_key: "", tiktok_client_secret: "", tiktok_access_token: "", tiktok_refresh_token: "", tiktok_open_id: "",
+  bluesky_identifier: "", bluesky_app_password: "",
 };
 
 async function main() {
@@ -68,16 +71,34 @@ async function main() {
     config.platforms.push("linkedin");
   }
 
-  const wantBsky = (await ask(cyan("     Bluesky? (y/n): "))).toLowerCase() === "y";
-  if (wantBsky) {
-    config.handle.bluesky = (await ask(cyan("     Bluesky handle (e.g. you.bsky.social): "))).trim();
-    config.platforms.push("bluesky");
+  const wantIg = (await ask(cyan("     Instagram? (y/n): "))).toLowerCase() === "y";
+  if (wantIg) {
+    config.handle.instagram = (await ask(cyan("     Instagram handle (e.g. @you): "))).trim();
+    config.platforms.push("instagram");
   }
 
   const wantThreads = (await ask(cyan("     Threads? (y/n): "))).toLowerCase() === "y";
   if (wantThreads) {
     config.handle.threads = (await ask(cyan("     Threads handle: "))).trim();
     config.platforms.push("threads");
+  }
+
+  const wantYt = (await ask(cyan("     YouTube? (y/n): "))).toLowerCase() === "y";
+  if (wantYt) {
+    config.handle.youtube = (await ask(cyan("     YouTube channel handle (e.g. @yourchannel): "))).trim();
+    config.platforms.push("youtube");
+  }
+
+  const wantTt = (await ask(cyan("     TikTok? (y/n): "))).toLowerCase() === "y";
+  if (wantTt) {
+    config.handle.tiktok = (await ask(cyan("     TikTok handle (e.g. @you): "))).trim();
+    config.platforms.push("tiktok");
+  }
+
+  const wantBsky = (await ask(cyan("     Bluesky? (y/n): "))).toLowerCase() === "y";
+  if (wantBsky) {
+    config.handle.bluesky = (await ask(cyan("     Bluesky handle (e.g. you.bsky.social): "))).trim();
+    config.platforms.push("bluesky");
   }
 
   // ── API Credentials ─────────────────────────────────────
@@ -168,10 +189,13 @@ async function main() {
     console.log();
   }
 
-  if (wantBsky) {
-    console.log(dim("     Bluesky: Get app password at https://bsky.app/settings/app-passwords"));
-    config.bluesky_identifier = config.handle.bluesky || (await ask(cyan("     Bluesky identifier: "))).trim();
-    config.bluesky_app_password = (await ask(cyan("     Bluesky app password: "))).trim();
+  if (wantIg) {
+    console.log(dim("     Instagram: Requires an IG Business/Creator account linked to a FB Page."));
+    console.log(dim("     Create a Meta app + long-lived token at https://developers.facebook.com/apps\n"));
+    config.instagram_access_token = (await ask(cyan("     Instagram Access Token: "))).trim();
+    if (config.instagram_access_token) {
+      config.instagram_user_id = (await ask(cyan("     Instagram User ID (IG Business account ID): "))).trim();
+    }
     console.log();
   }
 
@@ -184,6 +208,37 @@ async function main() {
     console.log();
   }
 
+  if (wantYt) {
+    console.log(dim("     YouTube: Enable 'YouTube Data API v3' at https://console.cloud.google.com"));
+    console.log(dim("     Create OAuth 2.0 credentials, then grant the youtube.upload scope.\n"));
+    config.youtube_client_id = (await ask(cyan("     YouTube Client ID: "))).trim();
+    if (config.youtube_client_id) {
+      config.youtube_client_secret = (await ask(cyan("     YouTube Client Secret: "))).trim();
+      config.youtube_access_token = (await ask(cyan("     YouTube Access Token: "))).trim();
+      config.youtube_refresh_token = (await ask(cyan("     YouTube Refresh Token: "))).trim();
+    }
+    console.log();
+  }
+
+  if (wantTt) {
+    console.log(dim("     TikTok: Request the 'Content Posting API' product at https://developers.tiktok.com\n"));
+    config.tiktok_client_key = (await ask(cyan("     TikTok Client Key: "))).trim();
+    if (config.tiktok_client_key) {
+      config.tiktok_client_secret = (await ask(cyan("     TikTok Client Secret: "))).trim();
+      config.tiktok_access_token = (await ask(cyan("     TikTok Access Token: "))).trim();
+      config.tiktok_refresh_token = (await ask(cyan("     TikTok Refresh Token: "))).trim();
+      config.tiktok_open_id = (await ask(cyan("     TikTok Open ID: "))).trim();
+    }
+    console.log();
+  }
+
+  if (wantBsky) {
+    console.log(dim("     Bluesky: Get app password at https://bsky.app/settings/app-passwords"));
+    config.bluesky_identifier = config.handle.bluesky || (await ask(cyan("     Bluesky identifier: "))).trim();
+    config.bluesky_app_password = (await ask(cyan("     Bluesky app password: "))).trim();
+    console.log();
+  }
+
   // ── Write config ────────────────────────────────────────
   const yml = `# build-in-public profile
 # Generated by npm run setup
@@ -192,8 +247,11 @@ name: "${config.name}"
 handle:
   x: "${config.handle.x}"
   linkedin: "${config.handle.linkedin}"
-  bluesky: "${config.handle.bluesky}"
+  instagram: "${config.handle.instagram}"
   threads: "${config.handle.threads}"
+  youtube: "${config.handle.youtube}"
+  tiktok: "${config.handle.tiktok}"
+  bluesky: "${config.handle.bluesky}"
 
 platforms:
 ${config.platforms.map(p => `  - ${p}`).join("\n")}
@@ -202,17 +260,43 @@ voice:
   tone: "${config.voice.tone}"
   avoid: "${config.voice.avoid}"
 
-# API Credentials
+# X
 x_api_key: "${config.x_api_key}"
 x_api_secret: "${config.x_api_secret}"
 x_access_token: "${config.x_access_token}"
 x_access_secret: "${config.x_access_secret}"
+
+# LinkedIn
+linkedin_client_id: "${config.linkedin_client_id || ""}"
+linkedin_client_secret: "${config.linkedin_client_secret || ""}"
 linkedin_access_token: "${config.linkedin_access_token}"
+linkedin_refresh_token: "${config.linkedin_refresh_token || ""}"
 linkedin_person_urn: "${config.linkedin_person_urn}"
-bluesky_identifier: "${config.bluesky_identifier}"
-bluesky_app_password: "${config.bluesky_app_password}"
+
+# Instagram
+instagram_access_token: "${config.instagram_access_token}"
+instagram_user_id: "${config.instagram_user_id}"
+
+# Threads
 threads_access_token: "${config.threads_access_token}"
 threads_user_id: "${config.threads_user_id}"
+
+# YouTube
+youtube_client_id: "${config.youtube_client_id}"
+youtube_client_secret: "${config.youtube_client_secret}"
+youtube_access_token: "${config.youtube_access_token}"
+youtube_refresh_token: "${config.youtube_refresh_token}"
+
+# TikTok
+tiktok_client_key: "${config.tiktok_client_key}"
+tiktok_client_secret: "${config.tiktok_client_secret}"
+tiktok_access_token: "${config.tiktok_access_token}"
+tiktok_refresh_token: "${config.tiktok_refresh_token}"
+tiktok_open_id: "${config.tiktok_open_id}"
+
+# Bluesky
+bluesky_identifier: "${config.bluesky_identifier}"
+bluesky_app_password: "${config.bluesky_app_password}"
 `;
 
   writeFileSync(profilePath, yml);
@@ -224,8 +308,11 @@ threads_user_id: "${config.threads_user_id}"
   const check = (v) => v ? green("  ✓") : dim("  ✗");
   console.log(`${check(wantX && config.x_api_key)} X / Twitter`);
   console.log(`${check(wantLi && config.linkedin_access_token)} LinkedIn`);
-  console.log(`${check(wantBsky && config.bluesky_app_password)} Bluesky`);
+  console.log(`${check(wantIg && config.instagram_access_token)} Instagram`);
   console.log(`${check(wantThreads && config.threads_access_token)} Threads`);
+  console.log(`${check(wantYt && config.youtube_access_token)} YouTube`);
+  console.log(`${check(wantTt && config.tiktok_access_token)} TikTok`);
+  console.log(`${check(wantBsky && config.bluesky_app_password)} Bluesky`);
 
   console.log(`\n  Now open Claude Code and type ${cyan("/build-in-public")}\n`);
 
