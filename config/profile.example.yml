@@ -9,6 +9,7 @@ name: Your Name
 handle:
   x: "@yourhandle"
   linkedin: "https://linkedin.com/in/yourhandle"
+  facebook: "yourpage"
   instagram: "@yourhandle"
   threads: "@yourhandle"
   youtube: "@yourchannel"
@@ -19,6 +20,7 @@ handle:
 platforms:
   - x
   - linkedin
+  - facebook
   - instagram
   - threads
   - youtube
@@ -49,6 +51,14 @@ linkedin_client_secret: ""
 linkedin_access_token: ""
 linkedin_refresh_token: ""
 linkedin_person_urn: ""
+
+# Facebook — Meta Graph API (Page posting)
+# In your Meta app, request pages_manage_posts (+ pages_show_list to enumerate
+# pages). Exchange a short-lived user token for a long-lived one, then
+# GET /me/accounts to retrieve the Page access token (Page tokens issued from
+# a long-lived user token do not expire). page_id is the numeric Page ID.
+facebook_page_id: ""
+facebook_page_access_token: ""
 
 # Instagram — Meta Graph API
 # Requires an Instagram Business or Creator account linked to a Facebook Page.

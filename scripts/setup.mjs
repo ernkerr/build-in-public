@@ -24,11 +24,12 @@ function cyan(s) { return `\x1b[36m${s}\x1b[0m`; }
 
 const config = {
   name: "",
-  handle: { x: "", linkedin: "", instagram: "", threads: "", youtube: "", tiktok: "", bluesky: "" },
+  handle: { x: "", linkedin: "", facebook: "", instagram: "", threads: "", youtube: "", tiktok: "", bluesky: "" },
   platforms: [],
   voice: { tone: "direct, technical but human, no fluff", avoid: "AI buzzwords, corporate speak, cringe enthusiasm" },
   x_api_key: "", x_api_secret: "", x_access_token: "", x_access_secret: "",
   linkedin_client_id: "", linkedin_client_secret: "", linkedin_access_token: "", linkedin_refresh_token: "", linkedin_person_urn: "",
+  facebook_page_id: "", facebook_page_access_token: "",
   instagram_access_token: "", instagram_user_id: "",
   threads_access_token: "", threads_user_id: "",
   youtube_client_id: "", youtube_client_secret: "", youtube_access_token: "", youtube_refresh_token: "",
@@ -69,6 +70,12 @@ async function main() {
   if (wantLi) {
     config.handle.linkedin = (await ask(cyan("     LinkedIn profile URL (e.g. https://linkedin.com/in/you): "))).trim();
     config.platforms.push("linkedin");
+  }
+
+  const wantFb = (await ask(cyan("     Facebook Page? (y/n): "))).toLowerCase() === "y";
+  if (wantFb) {
+    config.handle.facebook = (await ask(cyan("     Facebook Page handle (e.g. erin.codes): "))).trim();
+    config.platforms.push("facebook");
   }
 
   const wantIg = (await ask(cyan("     Instagram? (y/n): "))).toLowerCase() === "y";
@@ -189,6 +196,19 @@ async function main() {
     console.log();
   }
 
+  if (wantFb) {
+    console.log(dim("     Facebook Page setup:"));
+    console.log(dim("     1. In your Meta app (https://developers.facebook.com/apps), add pages_manage_posts + pages_show_list."));
+    console.log(dim("     2. In Graph API Explorer, get a User Access Token w/ those scopes."));
+    console.log(dim("     3. Exchange for long-lived user token, then GET /me/accounts to find your Page's access_token + id."));
+    console.log(dim("     (Page tokens issued from a long-lived user token don't expire.)\n"));
+    config.facebook_page_id = (await ask(cyan("     Facebook Page ID (numeric): "))).trim();
+    if (config.facebook_page_id) {
+      config.facebook_page_access_token = (await ask(cyan("     Facebook Page Access Token: "))).trim();
+    }
+    console.log();
+  }
+
   if (wantIg) {
     console.log(dim("     Instagram: Requires an IG Business/Creator account linked to a FB Page."));
     console.log(dim("     Create a Meta app + long-lived token at https://developers.facebook.com/apps\n"));
@@ -247,6 +267,7 @@ name: "${config.name}"
 handle:
   x: "${config.handle.x}"
   linkedin: "${config.handle.linkedin}"
+  facebook: "${config.handle.facebook}"
   instagram: "${config.handle.instagram}"
   threads: "${config.handle.threads}"
   youtube: "${config.handle.youtube}"
@@ -272,6 +293,10 @@ linkedin_client_secret: "${config.linkedin_client_secret || ""}"
 linkedin_access_token: "${config.linkedin_access_token}"
 linkedin_refresh_token: "${config.linkedin_refresh_token || ""}"
 linkedin_person_urn: "${config.linkedin_person_urn}"
+
+# Facebook
+facebook_page_id: "${config.facebook_page_id}"
+facebook_page_access_token: "${config.facebook_page_access_token}"
 
 # Instagram
 instagram_access_token: "${config.instagram_access_token}"
@@ -308,6 +333,7 @@ bluesky_app_password: "${config.bluesky_app_password}"
   const check = (v) => v ? green("  ✓") : dim("  ✗");
   console.log(`${check(wantX && config.x_api_key)} X / Twitter`);
   console.log(`${check(wantLi && config.linkedin_access_token)} LinkedIn`);
+  console.log(`${check(wantFb && config.facebook_page_access_token)} Facebook`);
   console.log(`${check(wantIg && config.instagram_access_token)} Instagram`);
   console.log(`${check(wantThreads && config.threads_access_token)} Threads`);
   console.log(`${check(wantYt && config.youtube_access_token)} YouTube`);

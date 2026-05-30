@@ -2,6 +2,43 @@
 
 ## Flow
 
+### Step 0: Direct publish from conversation
+
+If the user said **"post it"** / **"post {platform(s)}"** / **"post all"** mid-conversation AND there are active drafts in the current conversation context (e.g. from a `modes/draft.md` session that just ran), skip Step 1 entirely and publish directly.
+
+**Resolving which platforms to publish:**
+
+- *"post it"* / *"post"* / *"post all"* → every active draft shown in the current conversation.
+- *"post linkedin"* / *"post LI and FB"* / *"post bsky and x"* → only the named subset. Match platform names case-insensitively; accept aliases (LI = LinkedIn, FB = Facebook, BSky = Bluesky).
+- If ambiguous (e.g. only one variant exists), default to that one.
+
+**Publish each one** using the existing publish mechanics from Step 2:
+
+1. Write the draft content to `/tmp/bip-post-{platform}.txt` (use the Write tool).
+2. Invoke the relevant script:
+   - **X**: `node scripts/publish-x.mjs --file /tmp/bip-post-x.txt [--image <path>]`
+   - **LinkedIn**: `node scripts/publish-linkedin.mjs --file /tmp/bip-post-linkedin.txt [--image <path>]`
+   - **Facebook**: `node scripts/publish-facebook.mjs --file /tmp/bip-post-facebook.txt [--image <path>]`
+   - **Bluesky**: `node scripts/publish-bluesky.mjs --file /tmp/bip-post-bluesky.txt [--image <path>]`
+   - For platforms without API creds → use the clipboard workflow from Step 2.
+3. Collect the returned URLs and show them together:
+
+```
+✓ LinkedIn: https://linkedin.com/feed/update/...
+✓ Facebook: https://facebook.com/erin.codes/posts/...
+✓ Bluesky:  https://bsky.app/profile/.../post/...
+✓ X:        https://x.com/i/status/...
+```
+
+4. **Update the data files** in one pass:
+   - Append rows to `data/drafts.md` with status `published` (or update existing pending rows if the drafts were already saved by Step 8 of draft mode).
+   - Append rows to `data/published.md` (use the format from Step 3 below).
+5. Clean up the temp files (`rm /tmp/bip-post-*.txt`).
+
+If a publish fails for one platform, surface the error inline (`✗ Facebook: <error>`) and continue with the rest — don't abort the whole batch. Offer to retry the failed ones.
+
+If there are NO active drafts in the conversation (e.g. user typed "post it" cold), fall through to Step 1.
+
 ### Step 1: Show pending drafts
 
 Read `data/drafts.md` and filter for rows with status `pending` or `approved`.
@@ -33,12 +70,14 @@ For each selected draft, write the post content to a temp file first, then invok
 
 - **X**: `node scripts/publish-x.mjs --file /tmp/bip-post.txt [--image <path>]`
 - **LinkedIn**: `node scripts/publish-linkedin.mjs --file /tmp/bip-post.txt [--image <path>]`
+- **Facebook**: `node scripts/publish-facebook.mjs --file /tmp/bip-post.txt [--image <path>]`
 - **Bluesky**: `node scripts/publish-bluesky.mjs --file /tmp/bip-post.txt [--image <path>]`
 
 Show results:
 ```
 ✓ Published to X: https://x.com/i/status/123456
 ✓ Published to LinkedIn: https://linkedin.com/feed/update/...
+✓ Published to Facebook: https://facebook.com/{page}/posts/...
 ✓ Published to Bluesky: https://bsky.app/profile/you/post/...
 ```
 
@@ -64,6 +103,12 @@ For LinkedIn:
 ```
 📋 Copied to clipboard!
 → Paste at https://www.linkedin.com/feed/ → "Start a post"
+```
+
+For Facebook:
+```
+📋 Copied to clipboard!
+→ Paste at https://www.facebook.com/ → "What's on your mind?" (on the erin.codes Page)
 ```
 
 For Bluesky:

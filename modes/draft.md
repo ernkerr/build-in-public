@@ -88,21 +88,45 @@ Before presenting the draft to the user, run this checklist. If anything fails, 
 
 If the draft fails, rewrite silently and run the gate again. Only show drafts that pass.
 
+### Step 5.5: Auto-fanout (LinkedIn primary only)
+
+If the primary platform picked in Step 3 is **LinkedIn**, automatically run the Step 7 adaptation loop for `facebook`, `bluesky`, and `x` *before* showing anything to the user. Don't ask first — this is the in-conversation fanout pattern: the user wants to see all the variants together so they can iterate side-by-side.
+
+Skip a platform only if its voice file is missing (`data/voice/{platform}/voice.md`) — in that case, note `(skipped — no voice file)` in the output.
+
+Each adapted variant still runs through Step 5's quality gate and gets a "what changed and why" note per Step 7.
+
+For non-LinkedIn primaries (X, Threads, Instagram, etc.), skip Step 5.5 entirely. The current Step 6 menu still offers adaptation on request.
+
 ### Step 6: Get feedback
 
-Ask:
+**If Step 5.5 fired (LinkedIn primary, multiple variants shown):**
+
+Show all variants together, then offer:
+```
+Want to:
+1. Edit one — name which ("tighten the FB one", "punch up X")
+2. Post — say "post it" (all) or "post {platforms}" (e.g. "post linkedin and fb")
+3. Skip a platform — say "drop bsky" / "skip X"
+4. Start over
+```
+
+When the user says "post it" or "post {platforms}", switch to publish mode (see `modes/publish.md` Step 0 — direct publish from conversation).
+
+**Otherwise (single-primary case, no auto-fanout):**
+
 ```
 Want to:
 1. Edit this
-2. Publish to {primary platform}
+2. Publish to {primary platform} (say "post it")
 3. Adapt for {other platforms from profile.yml}
 4. Start over
 ```
 
 - If edit: let them give feedback, redraft, re-run the quality gate. Feedback handling follows `.claude/rules/feedback-loop.md` — identify scope, save to the right level of the voice tree.
-- If publish: switch to publish mode
-- If adapt: go to Step 7
-- If start over: go back to Step 1
+- If publish ("post it"): switch to publish mode (Step 0).
+- If adapt: go to Step 7.
+- If start over: go back to Step 1.
 
 ### Step 7: Adapt to other platforms (when requested)
 
