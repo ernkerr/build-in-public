@@ -51,4 +51,4 @@ Hard prohibitions ship as base defaults — [data/voice/never-words.md](data/voi
 
 ## Major decisions
 
-Logged at [decisions.md](decisions.md). When adding a new architectural choice that took real reasoning, append an entry there.
+Logged at `data/local/decisions.md` (private — the user's own record of trade-offs and why, for answering questions about the repo; never committed). When an architectural choice takes real reasoning, append an entry there in Challenge / Considered / Chose / Why format.

@@ -17,7 +17,7 @@ A Claude Code skill that reads your git history, drafts build-in-public posts fo
 | **Multi-platform**         | Writes differently for X (280 chars, punchy), LinkedIn (storytelling), Bluesky (indie), Threads (casual) |
 | **Expand ideas**           | Got a rough thought? Agent suggests 3 angles with hooks before drafting                                  |
 | **Learn from viral posts** | Scrapes popular #buildinpublic content to improve your drafts                                            |
-| **Audit your own account** | Pulls your published posts via API and extracts your real voice patterns (re-runnable, diffs over time) |
+| **Audit your own account** | Pulls your published posts via API, extracts your real voice — captions AND spoken (whisper transcription of your reels). Re-runnable, diffs over time |
 | **Creator watchlist**      | Analyze creators you admire (via your logged-in browser) — what they do well, what to borrow         |
 | **Voice learning**         | Remembers your tone, patterns, and what works — gets better every post                                   |
 | **Cross-post**             | Like your X post? "Adapt for LinkedIn" rewrites it for that platform                                     |
@@ -107,6 +107,29 @@ Or just tell it what you want:
   ✓ Published to Bluesky: https://bsky.app/profile/...
 ```
 
+Or learn your voice from evidence instead of guesses:
+
+```
+> /build-in-public audit instagram
+
+  Pulled 240 posts (2 yrs). Findings:
+  · Two caption modes: sentence-case analogy explainers ("Think of it
+    like...") vs lowercase casual one-liners — different rules each
+  · Em dashes absent, "&" replaces "and", ~5 endline hashtags
+  · Explainers pull 3x the comments of memes
+  Report → data/local/audits/instagram/2026-06-10.md
+  Voice files updated. Re-run anytime — re-audits diff against this one.
+
+> /build-in-public creators @somecreator — I love her pacing
+
+  @somecreator: 12K followers, AI tutorials, 3 posts/week.
+  Top reel (48K views): list format where every item =
+  literal command + threshold + payoff inline. Not AI-ish because
+  it's receipts ("fixed it for me"), not authority.
+  → Saved to your watchlist + references. Want this pattern in your
+    scripting voice?
+```
+
 ## How It Works
 
 ```
@@ -178,7 +201,7 @@ Instagram powers the **account audit** (`/build-in-public audit instagram` — e
 
 The agent improves over time:
 
-1. **Account audit** — `/build-in-public audit instagram` pulls your own published posts via API and extracts your *actual* voice patterns (caption modes, punctuation tells, what performs). The fastest way to seed your personal layer with evidence instead of guesses. Re-run it anytime; reports land in `data/local/audits/{platform}/` and each re-audit diffs against the last one.
+1. **Account audit** — `/build-in-public audit instagram` pulls your own published posts via API and extracts your *actual* voice patterns (caption modes, punctuation tells, what performs), plus a **transcription pass** (your reels → whisper) for your spoken voice. The fastest way to seed your personal layer with evidence instead of guesses. Re-run it anytime; reports land in `data/local/audits/{platform}/` and each re-audit diffs against the last one.
 2. **Style references** — Paste posts you like: "learn from this: [post]"
 3. **Viral scraping** — `/build-in-public learn x` finds popular #buildinpublic posts and analyzes what works
 4. **Voice files** — `data/voice/voice.md` (universal) plus `data/voice/{platform}/voice.md` accumulate your patterns, tone, and what resonates per platform. Task-specific voices live under platform folders (e.g. `data/voice/instagram/scripting.md`).
@@ -191,7 +214,6 @@ The more you use it, the less editing you'll need.
 ```
 CLAUDE.md                   # Agent identity + @-imports for the always-on rules
 SKILL.md                    # Agent-level knowledge surface (the high-level shape)
-decisions.md                # Log of major design/architectural decisions
 
 .claude/
   rules/                    # COMMON layer — brand-agnostic, same for every user

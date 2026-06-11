@@ -15,6 +15,7 @@ data/local/
   published.md        # Your publication history (created on first publish)
   watchlist.md        # Creators you admire — cards w/ why + what to borrow (modes/creators.md)
   strategy.md         # Your content strategy — pillars, experiments, what's proven
+  decisions.md        # PRIVATE design log — big decisions, trade-offs, why (Challenge/Considered/Chose/Why)
   outputs/            # Finished deliverables (reel scripts, etc.)
   archive/            # Past iterations you want to keep around
 ```
