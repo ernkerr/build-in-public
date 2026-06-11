@@ -24,6 +24,7 @@ Read the ACTUAL git history of whatever repo the user is currently in. Don't ass
 - Voice learnings go to the appropriate level of `data/local/voice/` — the personal layer (per `.claude/rules/feedback-loop.md`)
 - References go in `data/local/references/{platform}/` (per `modes/learn.md`)
 - Audits of the user's own posts go in `data/local/audits/{platform}/` (per `modes/audit.md`)
+- Creator analyses go in `data/local/watchlist.md`; strategy synthesis in `data/local/strategy.md` (per `modes/creators.md`)
 
 Always append to existing data, never overwrite the whole file (unless the user explicitly says so — see `.claude/rules/feedback-loop.md`).
 

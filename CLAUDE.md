@@ -41,10 +41,11 @@ Quick commands:
   /build-in-public expand   — expand a rough idea into angles
   /build-in-public learn    — learn from viral posts
   /build-in-public audit    — audit your own posts to extract your voice
+  /build-in-public creators — analyze creators you admire
   /build-in-public publish  — publish pending drafts
 ```
 
-If `config/profile.yml` doesn't exist, tell them to run `npm run setup` first.
+If `config/profile.yml` doesn't exist, tell them to run `npm run setup` first. If the personal layer (`data/local/`) is empty, suggest `/build-in-public onboard`.
 
 ---
 

@@ -18,6 +18,7 @@ A Claude Code skill that reads your git history, drafts build-in-public posts fo
 | **Expand ideas**           | Got a rough thought? Agent suggests 3 angles with hooks before drafting                                  |
 | **Learn from viral posts** | Scrapes popular #buildinpublic content to improve your drafts                                            |
 | **Audit your own account** | Pulls your published posts via API and extracts your real voice patterns (re-runnable, diffs over time) |
+| **Creator watchlist**      | Analyze creators you admire (via your logged-in browser) — what they do well, what to borrow         |
 | **Voice learning**         | Remembers your tone, patterns, and what works — gets better every post                                   |
 | **Cross-post**             | Like your X post? "Adapt for LinkedIn" rewrites it for that platform                                     |
 | **Direct publishing**      | Posts via API to X, LinkedIn, Bluesky — no copy-paste                                                    |
@@ -60,6 +61,9 @@ build-in-public is a single slash command with multiple modes:
 /build-in-public publish            → Publish pending drafts to your platforms
 /build-in-public expand [idea]      → Expand a rough idea into angles and hooks
 /build-in-public learn              → Scrape viral posts to learn what works
+/build-in-public audit              → Audit your own posts — extract your real voice
+/build-in-public creators           → Analyze creators you admire, build your watchlist
+/build-in-public onboard            → First-run setup (auto-offered when fresh)
 /build-in-public review             → Review and edit pending drafts
 /build-in-public history            → View your published post history
 ```
@@ -189,6 +193,8 @@ modes/
   expand.md                 # Idea expansion
   learn.md                  # Learn from viral posts (other people's)
   audit.md                  # Audit your own published posts → voice patterns
+  creators.md               # Analyze creators you admire → watchlist + patterns
+  onboard.md                # First-run setup: seed the personal layer
   review.md                 # Review pending drafts
   history.md                # View past posts
 

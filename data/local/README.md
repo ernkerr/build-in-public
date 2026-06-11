@@ -13,6 +13,8 @@ data/local/
     {platform}/{date}.md
   drafts.md           # Your draft queue (created on first draft)
   published.md        # Your publication history (created on first publish)
+  watchlist.md        # Creators you admire — cards w/ why + what to borrow (modes/creators.md)
+  strategy.md         # Your content strategy — pillars, experiments, what's proven
   outputs/            # Finished deliverables (reel scripts, etc.)
   archive/            # Past iterations you want to keep around
 ```
