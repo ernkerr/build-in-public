@@ -142,6 +142,7 @@ You're coding → push commits → /build-in-public draft
 | **X**        | API key + secret, access token + secret | [X Developer Portal](https://developer.x.com) — create app, enable OAuth 1.0a Read+Write |
 | **LinkedIn** | Access token + person URN               | `npm run connect:linkedin` — see [LinkedIn setup](#linkedin-setup) below                 |
 | **Bluesky**  | Handle + app password                   | [Bluesky Settings](https://bsky.app/settings/app-passwords) — create app password        |
+| **Instagram**| Access token (60-day)                   | `npm run connect:instagram` — see [Instagram setup](#instagram-setup) below              |
 | **Threads**  | Access token + user ID                  | [Meta Developer](https://developers.facebook.com) — requires app review                  |
 
 Add credentials to `config/profile.yml`. Only configure the platforms you use — the rest are optional.
@@ -158,6 +159,20 @@ Add credentials to `config/profile.yml`. Only configure the platforms you use �
    It will ask for your Client ID and Secret (from the Auth tab), open your browser to authorize, and handle the rest automatically.
 
 > **Note:** LinkedIn tokens expire after 60 days. Run `npm run connect:linkedin` again to re-auth.
+
+### Instagram Setup
+
+Instagram powers the **account audit** (`/build-in-public audit instagram` — extracts your real voice from your published posts). Setup is ~5 minutes, all free:
+
+1. Make your Instagram account **Professional** (Business or Creator): Instagram app → Settings → Account type
+2. Create a Meta app at [developers.facebook.com/apps](https://developers.facebook.com/apps) (type: Business) → **Add Product → Instagram** → "API setup with Instagram business login"
+3. Run the guided connector:
+   ```bash
+   npm run connect:instagram
+   ```
+   It opens the dashboard, tells you exactly where to generate the token (under "Generate access tokens": Add account → log in → copy), then **validates the token and resolves your user ID automatically**.
+
+> **Note:** tokens last ~60 days. Re-run `npm run connect:instagram` and it offers a one-keypress refresh.
 
 ## Learning Your Voice
 

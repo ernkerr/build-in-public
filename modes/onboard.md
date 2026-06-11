@@ -14,7 +14,7 @@ Explain the two layers in plain words: the repo ships generic voice defaults; ev
 
 - If yes → check `config/profile.yml` for `instagram_user_id` + `instagram_access_token`.
   - Creds present → run `modes/audit.md` (their real posts → voice patterns, what performs, metrics baseline).
-  - Creds missing → ask whether they have an existing Meta app/token in another project; otherwise point to the audit mode's credentials section for setup, and offer to continue onboarding without it.
+  - Creds missing → ask whether they have an existing Meta app/token in another project (offer to copy it in); otherwise have them run `npm run connect:instagram` in another terminal (guided, ~5 min, validates + auto-fills) — and offer to continue onboarding with step 2 while they do it, circling back to the audit after.
 - If no/skip → continue.
 
 ### 2. "Any creators you want to sound, look, or make content like?"

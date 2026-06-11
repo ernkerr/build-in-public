@@ -11,7 +11,8 @@
     "publish:bluesky": "node scripts/publish-bluesky.mjs",
     "clipboard": "node scripts/clipboard.mjs",
     "scrape": "node scripts/scrape-viral.mjs",
-    "connect:linkedin": "node scripts/connect-linkedin.mjs"
+    "connect:linkedin": "node scripts/connect-linkedin.mjs",
+    "connect:instagram": "node scripts/connect-instagram.mjs"
   },
   "dependencies": {
     "@atproto/api": "^0.19.8",

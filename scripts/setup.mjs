@@ -210,13 +210,10 @@ async function main() {
   }
 
   if (wantIg) {
-    console.log(dim("     Instagram: Requires an IG Business/Creator account linked to a FB Page."));
-    console.log(dim("     Create a Meta app + long-lived token at https://developers.facebook.com/apps\n"));
-    config.instagram_access_token = (await ask(cyan("     Instagram Access Token: "))).trim();
-    if (config.instagram_access_token) {
-      config.instagram_user_id = (await ask(cyan("     Instagram User ID (IG Business account ID): "))).trim();
-    }
-    console.log();
+    console.log(dim("     Instagram: there's a guided connector — run this after setup finishes:"));
+    console.log(cyan("       npm run connect:instagram"));
+    console.log(dim("     It walks you through the Meta dashboard, validates your token,"));
+    console.log(dim("     and fills in your user ID automatically.\n"));
   }
 
   if (wantThreads) {
@@ -340,7 +337,13 @@ bluesky_app_password: "${config.bluesky_app_password}"
   console.log(`${check(wantTt && config.tiktok_access_token)} TikTok`);
   console.log(`${check(wantBsky && config.bluesky_app_password)} Bluesky`);
 
-  console.log(`\n  Now open Claude Code and type ${cyan("/build-in-public")}\n`);
+  if (wantIg && !config.instagram_access_token) {
+    console.log(`\n  Instagram pending: run ${cyan("npm run connect:instagram")} ${dim("(guided, ~5 min)")}`);
+  }
+
+  console.log(`\n  Now open Claude Code here and type ${cyan("/build-in-public onboard")}`);
+  console.log(dim("  It seeds your voice from your own posts + creators you admire,"));
+  console.log(dim("  so drafts sound like you from day one.\n"));
 
   rl.close();
 }

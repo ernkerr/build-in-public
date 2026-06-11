@@ -14,7 +14,8 @@ First run codified from the 2026-06-10 Instagram audit (see `data/local/audits/i
 ## Credentials
 
 - Read from `config/profile.yml` (gitignored). Instagram needs `instagram_user_id` + `instagram_access_token` (Instagram API with Instagram Login — token from a Meta developer app with `instagram_basic` / business media permissions).
-- If empty: ask whether creds exist in another local project before walking through Meta app setup from scratch (existing crossposting/scheduling tools often already have a token).
+- If empty: first ask whether creds exist in another local project (existing crossposting/scheduling tools often already have a token — offer to copy them in). Otherwise point at the guided connector: `npm run connect:instagram` (walks the Meta dashboard steps, validates the token, auto-resolves the user ID). Full steps in the README's "Instagram Setup" section.
+- If the API ever returns a 190 (expired token): `npm run connect:instagram` offers a one-keypress refresh.
 - Never print tokens. Source them into env vars; keep URLs with tokens out of displayed output.
 
 ## Instagram protocol
