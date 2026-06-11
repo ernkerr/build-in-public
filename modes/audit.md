@@ -29,10 +29,22 @@ First run codified from the 2026-06-10 Instagram audit (see `data/local/audits/i
 7. **Distill into the personal voice layer** (`data/local/voice/{platform}/`) per `.claude/rules/feedback-loop.md`: append/refine, never clobber existing learnings; update `Confidence:` lines with provenance ("account audit YYYY-MM-DD, n posts"). Where the audit contradicts an existing personal claim, correct the claim and cite the audit. Where it contradicts a *base* default, leave base alone — note the divergence in the personal file (personal wins at draft time).
 8. **Keep the boundary:** audits are the user's real voice; references are inspiration from others. Never mix the two.
 
+## Transcription pass (spoken voice) — run after the caption audit
+
+Captions are half the voice; this add-on covers the spoken half (first run: 2026-06-11).
+
+1. Pull `media_url` for VIDEO posts (works for the user's OWN media — the API serves the mp4s directly; other creators' videos are NOT accessible this way). Select ~15–20: top-liked all-time + most recent.
+2. Download each mp4 (`curl`), extract audio: `ffmpeg -i in.mp4 -ar 16000 -ac 1 out.wav`.
+3. Transcribe with whisper-cpp (`brew install whisper-cpp`; model `ggml-small.en.bin` from huggingface `ggerganov/whisper.cpp`, cache it at `~/.cache/whisper-cpp/`): `whisper-cli -m <model> -f <wav> -otxt`.
+4. **Classify before analyzing.** Expect many reels to be trend-audio only (whisper returns "(upbeat music)" or song lyrics). That ratio is a *format finding*, not a failure — report voiceover : trend-audio, and note which formats the user's written voice files actually apply to.
+5. Analyze the real voiceovers: hook line + formula used, pivot lines, analogy use (and whether it rings open→close), sentence length vs cut pace, how it ends. Distill into the personal `scripting.md` with an n-count — n=1 is still worth recording for a flagship, just say so.
+6. Write findings into the dated audit report alongside the caption audit.
+
 ## Limits (Instagram)
 
-- API returns captions + metadata only. Spoken voice, hooks, and text overlays need video download + transcription — not built yet. Don't update `scripting.md`/`hook.md`/`text-overlay.md` from a caption-only audit except to correct caption-related claims.
+- Text overlays are visual — needs frame extraction + OCR, not built yet. Don't update `text-overlay.md` from audio.
 - Stories aren't exposed by this endpoint. Comment replies (the user's reply voice) not covered.
+- Other creators' reels can't be pulled via API — manual save/screen-grab if a creator's voiceover needs studying.
 
 ## Other platforms
 
