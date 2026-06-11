@@ -1,0 +1,22 @@
+{
+  "name": "build-in-public",
+  "version": "1.0.0",
+  "description": "Claude Code skill — turn git commits into build-in-public posts",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "publish:x": "node scripts/publish-x.mjs",
+    "publish:linkedin": "node scripts/publish-linkedin.mjs",
+    "publish:facebook": "node scripts/publish-facebook.mjs",
+    "publish:bluesky": "node scripts/publish-bluesky.mjs",
+    "clipboard": "node scripts/clipboard.mjs",
+    "scrape": "node scripts/scrape-viral.mjs",
+    "connect:linkedin": "node scripts/connect-linkedin.mjs"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.19.8",
+    "twitter-api-v2": "^1.29.0",
+    "yaml": "^2.8.3"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,17 @@
+node_modules/
+.DS_Store
+
+# User config (contains API credentials)
+config/profile.yml
+
+# Personal layer — your voice learnings, audits, references. Never committed.
+# Forkers: this starts empty for you; the base defaults in data/voice/ apply
+# until your agent builds your personal layer here.
+data/local/*
+!data/local/README.md
+
+# Workspace dirs — contents are personal, only READMEs ship
+inbox/*
+!inbox/README.md
+outputs/*
+!outputs/README.md

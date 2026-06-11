@@ -1,0 +1,98 @@
+# build-in-public profile
+# Copy to config/profile.yml and fill in your details
+#
+# Modularity note: to add a new channel later, append it to the `platforms:`
+# list, add a handle entry, add a credentials block below, and add a matching
+# prompt branch in scripts/setup.mjs.
+
+name: Your Name
+handle:
+  x: "@yourhandle"
+  linkedin: "https://linkedin.com/in/yourhandle"
+  facebook: "yourpage"
+  instagram: "@yourhandle"
+  threads: "@yourhandle"
+  youtube: "@yourchannel"
+  tiktok: "@yourhandle"
+  bluesky: "you.bsky.social"
+
+# Which platforms to draft for (in priority order)
+platforms:
+  - x
+  - linkedin
+  - facebook
+  - instagram
+  - threads
+  - youtube
+  - tiktok
+  - bluesky
+
+# Voice preferences
+voice:
+  tone: "direct, technical but human, no fluff"
+  avoid: "AI buzzwords, corporate speak, cringe enthusiasm"
+
+# ─── API Credentials ────────────────────────────────────────────────
+
+# X (Twitter) — OAuth 1.0a
+# https://developer.x.com/en/portal/dashboard → create project + app → enable
+# OAuth 1.0a with Read+Write, then generate user access tokens.
+x_api_key: ""
+x_api_secret: ""
+x_access_token: ""
+x_access_secret: ""
+
+# LinkedIn — OAuth 2.0
+# https://linkedin.com/developers/apps → create app → request "Share on
+# LinkedIn" (w_member_social). Use `npm run connect:linkedin` to walk through
+# the OAuth flow and populate the token + person URN automatically.
+linkedin_client_id: ""
+linkedin_client_secret: ""
+linkedin_access_token: ""
+linkedin_refresh_token: ""
+linkedin_person_urn: ""
+
+# Facebook — Meta Graph API (Page posting)
+# In your Meta app, request pages_manage_posts (+ pages_show_list to enumerate
+# pages). Exchange a short-lived user token for a long-lived one, then
+# GET /me/accounts to retrieve the Page access token (Page tokens issued from
+# a long-lived user token do not expire). page_id is the numeric Page ID.
+facebook_page_id: ""
+facebook_page_access_token: ""
+
+# Instagram — Meta Graph API
+# Requires an Instagram Business or Creator account linked to a Facebook Page.
+# Create a Meta app at https://developers.facebook.com/apps → add the
+# Instagram Graph API product → generate a long-lived user access token.
+# user_id is the IG Business account ID (NOT the @handle).
+instagram_access_token: ""
+instagram_user_id: ""
+
+# Threads — Meta Graph API
+# https://developers.facebook.com/docs/threads → requires app review for
+# threads_basic + threads_content_publish scopes.
+threads_access_token: ""
+threads_user_id: ""
+
+# YouTube — Google OAuth 2.0
+# https://console.cloud.google.com → create project → enable "YouTube Data
+# API v3" → OAuth 2.0 credentials (Desktop or Web). Required scope:
+# https://www.googleapis.com/auth/youtube.upload
+youtube_client_id: ""
+youtube_client_secret: ""
+youtube_access_token: ""
+youtube_refresh_token: ""
+
+# TikTok — TikTok for Developers, Content Posting API
+# https://developers.tiktok.com → create app → request the "Content Posting
+# API" product. open_id is returned by the OAuth flow alongside the token.
+tiktok_client_key: ""
+tiktok_client_secret: ""
+tiktok_access_token: ""
+tiktok_refresh_token: ""
+tiktok_open_id: ""
+
+# Bluesky — app password (no OAuth required)
+# https://bsky.app/settings/app-passwords
+bluesky_identifier: ""
+bluesky_app_password: ""
