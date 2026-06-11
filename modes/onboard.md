@@ -1,37 +1,56 @@
 # Mode: onboard
 
-First-run setup for a new user: seed the personal layer (`data/local/`) so drafting sounds like THEM instead of the base defaults. Triggered automatically when the personal layer is empty (no `data/local/voice/` content, no watchlist), or explicitly via `onboard`.
+Seed (first run) or refresh (re-runs) the personal layer (`data/local/`) so drafting sounds like THE USER, not the base defaults. Auto-offered when the personal layer is empty; also run anytime via `onboard` to pull fresh data.
 
-Tone: conversational, one question at a time. Each step is skippable — never block on a step.
+Tone: conversational, one question at a time. Every step skippable — never block.
+
+## Re-run semantics (onboarding is repeatable, not one-time)
+
+Running `onboard` again is normal and encouraged — it's how the user pulls fresh posts, adds creators, and fills in credentials they didn't have last time. So:
+
+- **Merge, never clobber.** New info appends to existing files. Update a fact only when it *contradicts* what's there (e.g. follower count changed, a voice claim was disproven) — and say so when you do.
+- **Profile updates are additive.** New handles/creds/platforms fill empty fields in `config/profile.yml`; don't overwrite a populated field unless the user gives a new value for it.
+- **Detect prior state and pick up where it left off:** read what already exists (`data/local/voice/`, `watchlist.md`, audit reports, `profile.yml`) and lead with the gaps — "Last audit was [date], want a fresh pull?", "X and LinkedIn still don't have creds — set them up now?", "Add creators to your watchlist?"
+- **Audits are re-runnable and diff:** re-running an audit writes a new dated report and surfaces what moved (per `modes/audit.md`).
 
 ## Flow
 
 ### 0. Orient (one short paragraph)
 
-Explain the two layers in plain words: the repo ships generic voice defaults; everything personal (their voice, their references, their analyses) is built locally in `data/local/` and never committed. The two fastest seeds: analyze their own account, and analyze creators they admire.
+First run: explain the two layers plainly — the repo ships generic defaults; everything personal (voice, references, analyses) lives in gitignored `data/local/`, never committed. Re-run: skip the explainer, summarize current state instead ("Here's what's in your personal layer so far...") and offer the gaps.
 
-### 1. "Want me to analyze your Instagram?"
+### 1. Per-channel account audits
 
-- If yes → check `config/profile.yml` for `instagram_user_id` + `instagram_access_token`.
-  - Creds present → run `modes/audit.md` (their real posts → voice patterns, what performs, metrics baseline).
-  - Creds missing → ask whether they have an existing Meta app/token in another project (offer to copy it in); otherwise have them run `npm run connect:instagram` in another terminal (guided, ~5 min, validates + auto-fills) — and offer to continue onboarding with step 2 while they do it, circling back to the audit after.
-- If no/skip → continue.
+Read `platforms:` from `config/profile.yml`. For each configured platform, offer an audit — the user picks which to run (don't force all). Per platform:
 
-### 2. "Any creators you want to sound, look, or make content like?"
+- **Instagram** (full support): check `instagram_user_id` + `instagram_access_token`.
+  - Present → run `modes/audit.md` (caption audit + transcription pass → voice patterns, what performs, metrics baseline + dated report).
+  - Missing → offer to copy creds from another local project, else `npm run connect:instagram` (guided); continue with other steps meanwhile.
+- **X** (export-based): needs the data export (Settings → Download an archive, ~24h). If the export file is in `inbox/`, audit it now; else point them to request it and move on.
+- **LinkedIn** (export-based): same — Settings → Get a copy of your data → Posts. Audit from `inbox/` when it arrives.
+- **Threads / others:** note as available-when-built; don't block.
 
-- Ask for handles + a word on *why* each (sound / look / content).
-- Also offer: "or I can scan the accounts you follow and shortlist candidates" (logged-in Chrome, read-only).
-- Run `modes/creators.md` on what they give. Even 2–3 creators is plenty for a first pass.
+State which platforms you audited and which are pending (waiting on creds/exports), so the next re-run knows where to resume.
 
-### 3. Seed the strategy file
+### 2. Creators
 
-Create `data/local/strategy.md` from whatever steps 1–2 produced: goals (follower baseline if audited), draft content pillars, what's proven (from the audit), open questions (from the creator analysis). If both steps were skipped, create it with just a goals section and a note to revisit after the first audit.
+- Ask for handles + a word on *why* each (sound / look / content). On a re-run, show the current watchlist first and ask for additions.
+- Offer: "or I can scan the accounts you follow and shortlist candidates" (logged-in Chrome, read-only).
+- Run `modes/creators.md` on new handles (including the reel-transcription path for spoken-voice study). Merge into `watchlist.md`; don't duplicate existing cards.
 
-### 4. Close the loop
+### 3. Credentials sweep
 
-Tell them what got created (paths), and that everything compounds from here: feedback on drafts → voice files, saved posts → references, re-audits → diffs. Point at `/build-in-public draft` as the natural next step.
+Name what's still missing from `config/profile.yml` for the platforms they care about (publish creds, audit tokens, export files) and offer to set each up now — or note it for next time. This is also where a re-run collects the X key / LinkedIn export the user didn't have on the first pass.
+
+### 4. Seed / update the strategy file
+
+Create or update `data/local/strategy.md` from steps 1–2: goals (follower baselines from audits), content pillars, what's proven, open questions. On a re-run, append new findings and refresh metrics rather than rewriting.
+
+### 5. Close the loop
+
+Summarize what got created/updated (paths), note what's still pending (and how to finish it), and point at `/build-in-public draft`. Remind them `onboard` can be re-run anytime to pull fresh data.
 
 ## P2
 
-- Onboarding is Instagram-first. As other platforms get audit/creators support, extend step 1–2 to ask per configured platform (read `platforms:` from `profile.yml`).
-- "Scan who you follow" could rank candidates by relevance (bio keywords matching the user's niche) once there's enough signal about the user.
+- "Scan who you follow" could rank candidates by bio-keyword relevance to the user's niche once there's enough signal.
+- Auto-suggest a re-audit when the last report is >N weeks old.
